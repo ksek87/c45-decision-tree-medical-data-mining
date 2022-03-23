@@ -29,6 +29,7 @@ class Node:
         # takes frequency of classes in D to determine the majority class to set as output leaf label
         return
 
+
 class C45Tree:
     def __init__(self):
         self.tree_nodes = []
@@ -39,9 +40,11 @@ class C45Tree:
     def grow_tree(self):
         # generates the decision tree recursively
         return
+
     def predict(self, test_data):
         # uses test set to predict class labels from the constructed tree
         return
+
     def attribute_selection_method(self, node):
         return
 
@@ -53,3 +56,9 @@ class C45Tree:
 
     def print_tree(self):
         return
+
+# Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
+# make test and training splits THYROID dataset
+# declare tree, initialize root node / start training and growing the tree
+# print the tree and stats
+# conduct testing with test set for predictions, analyze resutls (accuracy, recall, etc)

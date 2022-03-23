@@ -115,14 +115,15 @@ class C45Tree:
 # declare tree, initialize root node / start training and growing the tree
 # print the tree and stats
 # conduct testing with test set for predictions, analyze results (accuracy, recall, etc)
-column_names = ['age', 'sex', 'on thyroxine', 'query on thyroxine', 'on antithyroid medication', 'sick', 'pregnant',
+'''column_names = ['age', 'sex', 'on thyroxine', 'query on thyroxine', 'on antithyroid medication', 'sick', 'pregnant',
                 'thyroid surgery', 'I131 treatment', 'query hypothyroid', 'query hyperthyroid', 'lithium', 'goitre',
                 'tumor', 'hypopituitary','psych', 'TSH measured', 'TSH', 'T3 measured', 'T3', 'TT4 measured', 'TT4',
                 'T4U measured', 'T4U', 'FTI measured', 'FTI', 'TBG measured', 'TBG', 'referral source', 'Class'
                 ]
-train_data = pd.read_csv('allbp.data',
+train_data = pd.read_csv('allbp_data.csv',
                          sep=',', names=column_names, encoding='utf-8' )
 print(len(train_data))
 print(train_data.head())
 print(train_data.columns)
 print(train_data.tail())
+'''

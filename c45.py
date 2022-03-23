@@ -85,6 +85,9 @@ class C45Tree:
         splitting_attribute = self.attribute_selection_method()  # TODO implement this
         N.splitting_attribute = splitting_attribute  # label node with the splitting criterion
 
+        # go through each attribute, recursion as needed, return node as needed
+
+
     @staticmethod
     def check_same_class_labels(self, labels):
         if len(set(labels)) == 1:

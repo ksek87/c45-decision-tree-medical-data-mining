@@ -5,6 +5,9 @@
 
     Program Description:
 
+    Data Source:
+    - UCI Machine Learning Repository, Thyroid Disease Data Set https://archive.ics.uci.edu/ml/datasets/thyroid+disease
+
     References Consulted:
     [1] Data Mining (3rd Edition) Chapter 8 https://doi-org.ezproxy.library.dal.ca/10.1016/B978-0-12-381479-1.00008-3
 '''
@@ -35,9 +38,21 @@ class C45Tree:
         self.tree_nodes = []
         self.depth = 0
         self.num_leaves = 0
-        return
+        self.root_node = None
 
-    def grow_tree(self):
+    def train(self, x_train, y_train):
+        '''
+        helper function to grow tree recursively, creates root node for the tree and initializes the recursion for
+        training the tree.
+        :param x_train:
+        :param y_train:
+        '''
+        # create root node
+        self.root_node = Node(x_train, y_train, 'root')
+        # call grow_tree with root node as base
+        self.grow_tree(self.root_node)
+
+    def grow_tree(self, node):
         # generates the decision tree recursively
         return
 
@@ -61,4 +76,4 @@ class C45Tree:
 # make test and training splits THYROID dataset
 # declare tree, initialize root node / start training and growing the tree
 # print the tree and stats
-# conduct testing with test set for predictions, analyze resutls (accuracy, recall, etc)
+# conduct testing with test set for predictions, analyze results (accuracy, recall, etc)

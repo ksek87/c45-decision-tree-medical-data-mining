@@ -42,11 +42,12 @@ class Node:
 
 
 class C45Tree:
-    def __init__(self):
+    def __init__(self, attributes):
         self.tree_nodes = []
         self.depth = 0
         self.num_leaves = 0
         self.root_node = None
+        self.attributes = attributes
 
     def train(self, x_train, y_train):
         '''
@@ -109,6 +110,16 @@ class C45Tree:
         return
 
     def attribute_selection_method(self, D, attribute_list):
+        best_attribute = -1
+        dataset_entropy = self.data_entropy(D[1])
+        splitting_criterion = ""
+        for attribute in attribute_list:
+            a_idx = self.attributes.get(attribute)
+            v = D[0][attribute].unique()  # find v distinct values of attribute
+            att_ent = 0.0
+            split_info = 0.0
+            for val in v:
+                data_partition = self.partition_data()  # TODO implement partition of data for attribute of certain values
 
         return best_attribute, splitting_criterion
 
@@ -175,7 +186,7 @@ print()
 node_test = Node(x_train, y_train, 'root')
 print(node_test.__dict__)
 print()
-system_test = C45Tree()
+system_test = C45Tree(column_names)
 print(system_test.__dict__)
 
 print(system_test.check_same_class_labels(y_train)) # good

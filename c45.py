@@ -18,7 +18,7 @@ import pandas as pd
 import itertools
 import math
 import csv
-
+import collections
 
 
 class Node:
@@ -90,12 +90,12 @@ class C45Tree:
         # TODO Figure out how to partition data properly, then recursion
         # remove split attribute from attribute list
         attribute_list.remove(best_attribute)
-        # go through each attribute, recursion as needed, return node as needed
+        # go through each attribute, recursion as needed, return node as needed, do binary split
 
         return N
 
     @staticmethod
-    def check_same_class_labels(self, labels):
+    def check_same_class_labels(labels):
         if len(set(labels)) == 1:
             return True
         else:
@@ -109,7 +109,15 @@ class C45Tree:
 
         return best_attribute, splitting_criterion
 
+    def class_prob(self, feature_label, labels):
+        c = collections.Counter(labels)
+        p = c[feature_label]/len(labels)
+        return p
+
     def information_gain(self):
+        return
+
+    def split_info(self):
         return
 
     def information_gain_ratio(self):
@@ -140,5 +148,27 @@ train_data = train_data.drop('index_dup', 1)
 #train_data = train_data.replace('?', pd.NA)
 # CONSIDER CHANGING DATA TO ONLY NUMERIC TYPE?
 print(len(train_data))
-print(train_data.head())
 print(train_data.columns)
+
+x_train = train_data.iloc[:,:-1]
+y_train = train_data.iloc[:,-1]
+y_train = y_train.replace('negative.', 'negative')
+y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
+y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
+print(y_train.head())
+print()
+# TESTS
+node_test = Node(x_train, y_train, 'root')
+print(node_test.__dict__)
+print()
+system_test = C45Tree()
+print(system_test.__dict__)
+
+print(system_test.check_same_class_labels(y_train)) # good
+# feature attribute testing methods
+# p_i calculation
+print(set(y_train.values))
+count_of_val = len(y_train[y_train == 'negative'])
+print(count_of_val, 'expected prob', count_of_val/len(y_train))
+p_i = system_test.class_prob('negative',y_train)
+print(p_i)

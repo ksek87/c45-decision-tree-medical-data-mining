@@ -26,7 +26,8 @@ class Node:
         self.data = x
         self.labels = y
         self.attributes_list = list(self.data.columns)
-        self.splitting_attribute = None
+        self.best_attribute = None
+        self.split_criterion= None
         self.node_type = node_type
         self.leaf_label = None
         self.depth = 0
@@ -84,11 +85,14 @@ class C45Tree:
         N = Node(D[0], D[1], 'node')
         N.depth = prev_node.depth + 1
         # conduct attribute selection method, label node with the criterion
-        splitting_attribute = self.attribute_selection_method()  # TODO implement this
-        N.splitting_attribute = splitting_attribute  # label node with the splitting criterion
-
+        best_attribute, splitting_criterion = self.attribute_selection_method(D, attribute_list)  # TODO implement this
+        N.split_criterion = splitting_criterion  # label node with the splitting criterion
+        # TODO Figure out how to partition data properly, then recursion
+        # remove split attribute from attribute list
+        attribute_list.remove(best_attribute)
         # go through each attribute, recursion as needed, return node as needed
 
+        return N
 
     @staticmethod
     def check_same_class_labels(self, labels):
@@ -101,9 +105,9 @@ class C45Tree:
         # uses test set to predict class labels from the constructed tree
         return
 
-    def attribute_selection_method(self, node):
-        criterion = []
-        return criterion
+    def attribute_selection_method(self, D, attribute_list):
+
+        return best_attribute, splitting_criterion
 
     def information_gain(self):
         return
@@ -114,6 +118,8 @@ class C45Tree:
     def print_tree(self):
         return
 
+    def partition_data(self):
+        return
 
 # Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
 # make test and training splits THYROID dataset
@@ -131,8 +137,8 @@ train_data = pd.read_csv('allbp_data.csv',
 train_data[['index_dup', 'age']] = train_data['age'].str.split(',',n=1,expand=True)
 train_data = train_data.drop('index_dup', 1)
 
-train_data = train_data.replace('?', pd.NA)
-
+#train_data = train_data.replace('?', pd.NA)
+# CONSIDER CHANGING DATA TO ONLY NUMERIC TYPE?
 print(len(train_data))
 print(train_data.head())
 print(train_data.columns)

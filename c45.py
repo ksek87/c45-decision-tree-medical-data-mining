@@ -112,16 +112,27 @@ class C45Tree:
     def class_prob(self, feature_label, labels):
         c = collections.Counter(labels)
         p = c[feature_label]/len(labels)
-        return p
+        return float(p)
 
-    def information_gain(self):
-        return
+    def data_entropy(self, labels):
+        entropy = 0.0
+        class_freq = collections.Counter(labels)
+        for l in class_freq.keys():
+            p = float(class_freq[l]/len(labels))
+            entropy = entropy - math.log(p, 2)
+
+        return entropy
+
+    def information_gain(self, dataset_entropy, attribute_entropy):
+        gain = dataset_entropy - attribute_entropy
+        return gain
 
     def split_info(self):
         return
 
-    def information_gain_ratio(self):
-        return
+    def information_gain_ratio(self, gain, split_info):
+        gain_ratio = float(gain/split_info)
+        return gain_ratio
 
     def print_tree(self):
         return
@@ -174,3 +185,5 @@ p_i = system_test.class_prob('negative',y_train)
 print(p_i)
 
 # entropy (info gain) calcs
+entr = system_test.data_entropy(y_train)
+print('data entropy',entr)

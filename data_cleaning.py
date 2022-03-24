@@ -14,9 +14,9 @@ import csv
 data = pd.read_csv('allbp.data',
                          sep='|', names=['', 'no'], encoding='utf-8' )
 data = data.drop('no',axis=1)
-data.to_csv('allbp_data.csv', header=False,quoting=csv.QUOTE_NONE, quotechar="",  escapechar=" ")
+data.to_csv('allbp_data.csv', header=False, quoting=csv.QUOTE_NONE, quotechar="", escapechar=" ") #index=False)
 
 test = pd.read_csv('allbp.test',
                          sep='|', names=['', 'no'], encoding='utf-8' )
 test = test.drop('no',axis=1)
-test.to_csv('allbp_test.csv', header=False,quoting=csv.QUOTE_NONE, quotechar="",  escapechar=" ")
+test.to_csv('allbp_test.csv', header=False, quoting=csv.QUOTE_NONE, quotechar="", escapechar=" ") #index=False)

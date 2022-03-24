@@ -35,7 +35,10 @@ class Node:
 
     def predict_leaf_class(self):
         # takes frequency of classes in D to determine the majority class to set as output leaf label
-        return
+        freq_classes = collections.Counter(self.labels)
+        pred_class = max(freq_classes, key=freq_classes.get)
+        self.leaf_label = pred_class
+        return pred_class
 
 
 class C45Tree:

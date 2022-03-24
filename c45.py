@@ -172,3 +172,5 @@ count_of_val = len(y_train[y_train == 'negative'])
 print(count_of_val, 'expected prob', count_of_val/len(y_train))
 p_i = system_test.class_prob('negative',y_train)
 print(p_i)
+
+# entropy (info gain) calcs

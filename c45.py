@@ -110,16 +110,34 @@ class C45Tree:
         return
 
     def attribute_selection_method(self, D, attribute_list):
-        best_attribute = -1
+        best_attribute = ''
         dataset_entropy = self.data_entropy(D[1])
         splitting_criterion = ""
+        best_info_gain_ratio = 0.0
+
         for attribute in attribute_list:
             a_idx = self.attributes.get(attribute)
             v = D[0][attribute].unique()  # find v distinct values of attribute
             att_ent = 0.0
             split_info = 0.0
             for val in v:
-                data_partition = self.partition_data()  # TODO implement partition of data for attribute of certain values
+                data_partition = self.partition_data(D, attribute, val)  # TODO implement partition of data for attribute of certain values
+                partition_labels = data_partition[1]
+                part_entropy = self.data_entropy(partition_labels)
+                p_j = float(len(data_partition)/len(D))
+                att_ent = att_ent + (p_j * part_entropy)
+                split_info = split_info - self.split_info(p_j)
+
+            if split_info == 0  # prevent division by zero for ratio
+                continue
+
+            info_gain = self.information_gain(dataset_entropy, att_ent)
+            info_gain_ratio = self.information_gain_ratio(info_gain, split_info) # calculate info gain ratio to select
+
+            # compare the top performing attribute info gain ratio
+            if info_gain_ratio > best_info_gain_ratio:
+                best_info_gain_ratio = info_gain_ratio
+                best_attribute = attribute
 
         return best_attribute, splitting_criterion
 
@@ -141,8 +159,9 @@ class C45Tree:
         gain = dataset_entropy - attribute_entropy
         return gain
 
-    def split_info(self):
-        return
+    def split_info(self, p_j):
+        info_split = (p_j * math.log(p_j,2))
+        return info_split
 
     def information_gain_ratio(self, gain, split_info):
         gain_ratio = float(gain/split_info)
@@ -151,8 +170,8 @@ class C45Tree:
     def print_tree(self):
         return
 
-    def partition_data(self):
-        return
+    def partition_data(self, D, attribute, val):
+        return []
 
 # Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
 # make test and training splits THYROID dataset

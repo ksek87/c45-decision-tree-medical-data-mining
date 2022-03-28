@@ -11,18 +11,17 @@
 
     References Consulted:
     [1] Data Mining (3rd Edition) Chapter 8 https://doi-org.ezproxy.library.dal.ca/10.1016/B978-0-12-381479-1.00008-3
-    [2] pandas library documentation https://pandas.pydata.org/docs/
+    [2] Pandas library documentation https://pandas.pydata.org/docs/
     [3] https://stackoverflow.com/questions/32617811/imputation-of-missing-values-for-categories-in-pandas
-
+    [4] collections Counter documentation https://docs.python.org/3/library/collections.html#collections.Counter
 '''
 
+import collections
+import math
 import numpy as np
 import pandas as pd
-import itertools
-import math
-import csv
-import collections
-from sklearn .utils import shuffle
+import sklearn
+from sklearn.utils import shuffle
 
 
 class Node:
@@ -40,7 +39,7 @@ class Node:
 
     def predict_leaf_class(self):
         # takes frequency of classes in D to determine the majority class to set as output leaf label
-        freq_classes = collections.Counter(self.labels)
+        freq_classes = collections.Counter(self.labels)  # [4]
         pred_class = max(freq_classes, key=freq_classes.get)
         self.leaf_label = pred_class
         return pred_class
@@ -59,12 +58,12 @@ class C45Tree:
         self.attributes = attributes[:-1]
 
     def train(self, x_train, y_train):
-        '''
+        """
             Helper function to grow tree recursively, creates root node for the tree and initializes the recursion for
             training the tree.
         :param x_train:
         :param y_train:
-        '''
+        """
         # create root node, put data partition in node
         self.root_node = Node(x_train, y_train, self.attributes, 'root')
         self.tree_nodes.append(self.root_node)
@@ -79,8 +78,6 @@ class C45Tree:
         :param prev_node:
         :return: N, the new node
         '''
-        # attribute_list = prev_node.attributes_list
-        # D = (prev_node.data, prev_node.labels)
 
         # check for termination cases
         # check if all tuples in D are in the same class
@@ -95,11 +92,10 @@ class C45Tree:
             return N
 
         # check if attribute list is empty, do majority voting on class
-        print(attribute_list, 'EMPTY CHECK')
         if not attribute_list:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
-            print('check for length of partition',len(D[0]))
+            print('check for length of partition', len(D[0]))
             N.predict_leaf_class()  # determine the class of the leaf
             N.best_attribute = 'EMPTY ATT'
             self.tree_nodes.append(N)
@@ -111,7 +107,7 @@ class C45Tree:
         N = Node(D[0], D[1], attribute_list, 'node')
         N.depth = prev_node.depth + 1
         # conduct attribute selection method, label node with the criterion
-        best_attribute = self.attribute_selection_method(D, attribute_list)  # TODO implement this
+        best_attribute = self.attribute_selection_method(D, attribute_list)
         N.best_attribute = best_attribute  # label node with best attribute
         if best_attribute == '':
             # early stop
@@ -120,22 +116,21 @@ class C45Tree:
             return N
 
         # remove split attribute from attribute list
-        print(attribute_list)
         if best_attribute in attribute_list:
             attribute_list.remove(best_attribute)
 
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
         if len(D[0][
                    best_attribute].unique()) > 5:  # 5 referral sources.... TODO map the discrete and continuous columns
-            # continuous, divy up data at mid point of the values ai + ai1/2
+            # continuous, divide up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
             l_child = self.grow_tree(N, attribute_list, l_part)
             r_child = self.grow_tree(N, attribute_list, r_part)
-            #self.tree_nodes.append(l_child)
-            N.children.append(l_child)
-            #self.tree_nodes.append(r_child)
-            N.children.append(r_child)
+            # self.tree_nodes.append(l_child)
+            # N.children.append(l_child)
+            # self.tree_nodes.append(r_child)
+            # N.children.append(r_child)
             N.parent = prev_node
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
@@ -150,15 +145,15 @@ class C45Tree:
                     L.best_attribute = best_attribute
                     L.split_criterion = v
                     L.predict_leaf_class()  # determine the class of the leaf
-                    #self.tree_nodes.append(L)
+                    # self.tree_nodes.append(L)
                     prev_node.children.append(L)
                     L.parent = N
                 else:
                     # recursion
                     child = self.grow_tree(N, attribute_list, data_part)
                     N.best_attribute = best_attribute
-                    #self.tree_nodes.append(child)
-                    N.children.append(child)
+                    # self.tree_nodes.append(child)
+                    # N.children.append(child)
                     N.parent = prev_node
 
         self.tree_nodes.append(N)
@@ -192,7 +187,6 @@ class C45Tree:
         return l_part, r_part, split_val
 
     def compute_info_gain_ratio_continuous(self, D, left_y, right_y):
-
         l_y = left_y
         r_y = right_y
 
@@ -203,7 +197,6 @@ class C45Tree:
         r_part_entropy = self.data_entropy(r_y)
         r_p_j = float(len(r_y) / len(D))
         r_ent = r_p_j * r_part_entropy
-        print(l_p_j, r_p_j)
 
         split_info = - self.split_info(l_p_j) - self.split_info(r_p_j)
         att_ent = l_ent + r_ent
@@ -223,12 +216,8 @@ class C45Tree:
         else:
             return False
 
-    def predict(self, test_data):
-        # uses test set to predict class labels from the constructed tree
-        return
-
     def attribute_selection_method(self, D, attribute_list):
-        best_attribute = '' #attribute_list[0]
+        best_attribute = ''
         dataset_entropy = self.data_entropy(D[1])
         splitting_criterion = ""
         best_info_gain_ratio = 0.0
@@ -261,17 +250,16 @@ class C45Tree:
                 best_info_gain_ratio = info_gain_ratio
                 best_attribute = attribute
 
-        print('best ATtribute', best_attribute)
         return best_attribute
 
     def class_prob(self, feature_label, labels):
-        c = collections.Counter(labels)
+        c = collections.Counter(labels)  # [4]
         p = c[feature_label] / len(labels)
         return float(p)
 
     def data_entropy(self, labels):
         entropy = 0.0
-        class_freq = collections.Counter(labels)
+        class_freq = collections.Counter(labels)  # [4]
         for l in class_freq.keys():
             p = float(class_freq[l] / len(labels))
             entropy = entropy - math.log(p, 2)
@@ -287,15 +275,11 @@ class C45Tree:
             return 0
 
         info_split = (p_j * math.log(p_j, 2))
-        print(info_split)
         return info_split
 
     def information_gain_ratio(self, gain, split_info):
         gain_ratio = float(gain / split_info)
         return gain_ratio
-
-    def print_tree(self):
-        return
 
     def partition_data(self, D, attribute, val):
         part = D[0].loc[D[0][attribute] == val]
@@ -303,6 +287,20 @@ class C45Tree:
         part_y = D[1].loc[part_idx]
         return part, part_y
 
+    def test_tree(self, test_sample, node):
+        if node.node_type == 'leaf':
+            return node.leaf_label
+        else:
+            for child in node.children:
+                return self.test_tree(test_sample, child)
+
+    def predict(self, test_data):  # TODO Add this functionality from the code in main routine
+        # uses test set to predict class labels from the constructed tree
+        return
+
+    def print_tree(self):
+        # figure out how to enumerate root, to children nodes
+        return
 
 # Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
 # make test and training splits THYROID dataset
@@ -322,16 +320,11 @@ train_data[['index_dup', 'age']] = train_data['age'].str.split(',', n=1, expand=
 train_data = train_data.drop('index_dup', 1)
 
 train_data = train_data.replace('?', pd.NA)
-# TODO replace ? with most common value
+# replace ? with most common value
 train_data = train_data.fillna(train_data.mode().iloc[0])  # [3]
-print(train_data['TSH'].unique())
-print(len(train_data))
-print(train_data.columns)
-print(train_data['referral source'].unique())
-print(train_data.dtypes)
 
-np.random.seed(42) # replicate results
-train_data = shuffle(train_data)
+np.random.seed(42)  # replicate results using random seed
+train_data = sklearn.utils.shuffle(train_data)
 
 x_train = train_data.iloc[:, :-1]
 y_train = train_data.iloc[:, -1]
@@ -339,15 +332,14 @@ y_train = y_train.replace('negative.', 'negative')
 y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
 y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
 
-print(y_train.head())
-print()
-# TESTS
+'''
 node_test = Node(x_train, y_train, column_names[:-1], 'root')
 print(node_test.__dict__)
 print()
+'''
 system_test = C45Tree(column_names, train_data)
 print(system_test.__dict__)
-
+'''
 print(system_test.check_same_class_labels(y_train))  # good
 # feature attribute testing methods
 # p_i calculation
@@ -360,11 +352,12 @@ print(p_i)
 # entropy (info gain) calcs
 entr = system_test.data_entropy(y_train)
 print('data entropy', entr)
-
+'''
 # small sample of data
 x = x_train[:100]
 y = y_train[:100]
 
+print('system_test:')
 system_test.train(x, y)
 print(len(system_test.tree_nodes))
 nodes_created = system_test.tree_nodes
@@ -372,8 +365,62 @@ nodes_created = system_test.tree_nodes
 for n in nodes_created:
     print(n.print_node())
 
-system_test.root_node.print_node()
 print(len(system_test.tree_nodes))
 print(len(set(nodes_created)))
-#set_nodes = set(nodes_created)
-#print(len(set_nodes))
+
+tester_instance = x_train.iloc[0]
+pred = system_test.test_tree(tester_instance, system_test.root_node)
+
+print('validating using the training data....')
+true_pred = 0
+for i in range(len(x)):
+    tester_instance = x.iloc[i]
+    pred = system_test.test_tree(tester_instance, system_test.root_node)
+    print(str(i), 'pred', pred, 'label', y.iloc[i])
+    if pred == y.iloc[i]:
+        true_pred += 1
+print('train accuracy:', true_pred / len(x))  # RANDOM SEED 24, train accuracy 0.95% with 100 samples
+
+testing_x = x_train[101:125]
+testing_y = y_train[101:125]
+
+print('testing accuracy....')
+true_pred = 0
+for j in range(len(testing_x)):
+    tester_instance = testing_x.iloc[j]
+    pred = system_test.test_tree(tester_instance, system_test.root_node)
+    print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    if pred == testing_y.iloc[j]:
+        true_pred += 1
+print('test accuracy:', true_pred / len(testing_x))
+
+print('500 sample tests:')
+x_500 = x_train[:500]
+y_500 = y_train[:500]
+system_test500 = C45Tree(column_names, train_data)
+system_test500.train(x_500, y_500)
+print('system500 nodes:', len(system_test500.tree_nodes))
+
+print('validating using the training data....')
+true_pred = 0
+for i in range(len(x_500)):
+    tester_instance = x_500.iloc[i]
+    pred = system_test500.test_tree(tester_instance, system_test.root_node)
+    print(str(i), 'pred', pred, 'label', y_500.iloc[i])
+    if pred == y_500.iloc[i]:
+        true_pred += 1
+print('train accuracy:',
+      true_pred / len(x_500))  # RANDOM SEED 42, train accuracy 0.956% with 100 samples test acc 0.9583
+
+testing_x = x_train[501:625]
+testing_y = y_train[501:625]
+
+print('testing accuracy...')
+true_pred = 0
+for j in range(len(testing_x)):
+    tester_instance = testing_x.iloc[j]
+    pred = system_test.test_tree(tester_instance, system_test.root_node)
+    print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    if pred == testing_y.iloc[j]:
+        true_pred += 1
+print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677

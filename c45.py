@@ -7,10 +7,13 @@
 
     Data Source:
     - UCI Machine Learning Repository, Thyroid Disease Data Set https://archive.ics.uci.edu/ml/datasets/thyroid+disease
-        Using thyroid0387.data file
+        Using allbp.data file
 
     References Consulted:
     [1] Data Mining (3rd Edition) Chapter 8 https://doi-org.ezproxy.library.dal.ca/10.1016/B978-0-12-381479-1.00008-3
+    [2] pandas library documentation https://pandas.pydata.org/docs/
+    [3] https://stackoverflow.com/questions/32617811/imputation-of-missing-values-for-categories-in-pandas
+
 '''
 
 import numpy as np
@@ -155,7 +158,7 @@ class C45Tree:
         r_part = []
 
         for i in range(0,len(data)-1):
-            mid_point = int(data.iloc[i][attribute] + data.iloc[i + 1][attribute]) / 2
+            mid_point = (float(data.iloc[i][attribute]) + float(data.iloc[i + 1][attribute])) / 2
             left_d = D[0].loc[pd.to_numeric(D[0][attribute]) > mid_point]
             left_idx = D[0].index[pd.to_numeric(D[0][attribute]) > mid_point]
             left_y = D[1].loc[left_idx]
@@ -302,16 +305,22 @@ train_data = pd.read_csv('allbp_data.csv',
 train_data[['index_dup', 'age']] = train_data['age'].str.split(',', n=1, expand=True)
 train_data = train_data.drop('index_dup', 1)
 
-# train_data = train_data.replace('?', pd.NA)
-# CONSIDER CHANGING DATA TO ONLY NUMERIC TYPE?
+train_data = train_data.replace('?', pd.NA)
+# TODO replace ? with most common value
+train_data = train_data.fillna(train_data.mode().iloc[0]) # [3]
+print(train_data['TSH'].unique())
 print(len(train_data))
 print(train_data.columns)
 print(train_data['referral source'].unique())
+print(train_data.dtypes)
 x_train = train_data.iloc[:, :-1]
 y_train = train_data.iloc[:, -1]
 y_train = y_train.replace('negative.', 'negative')
 y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
 y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
+
+
+
 print(y_train.head())
 print()
 # TESTS

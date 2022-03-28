@@ -22,10 +22,10 @@ import collections
 
 
 class Node:
-    def __init__(self, x, y, node_type):
+    def __init__(self, x, y, attribute_list, node_type):
         self.data = x
         self.labels = y
-        self.attributes_list = list(self.data.columns)[:-1]
+        self.attributes_list = attribute_list
         self.best_attribute = None
         self.split_criterion = None
         self.node_type = node_type
@@ -50,8 +50,6 @@ class C45Tree:
         self.root_node = None
         self.attributes = attributes[:-1]
 
-
-
     def train(self, x_train, y_train):
         '''
             Helper function to grow tree recursively, creates root node for the tree and initializes the recursion for
@@ -60,20 +58,21 @@ class C45Tree:
         :param y_train:
         '''
         # create root node, put data partition in node
-        self.root_node = Node(x_train, y_train, 'root')
+        self.root_node = Node(x_train, y_train, self.attributes, 'root')
         self.tree_nodes.append(self.root_node)
         # call grow_tree with root node as base
-        self.grow_tree(self.root_node, (x_train,y_train))
+        self.grow_tree(self.root_node, (x_train, y_train))
 
-    def grow_tree(self, prev_node,D):
+    def grow_tree(self, prev_node, attribute_list, D):
         '''
             Uses C4.5 decision tree algorithm to grow a tree during training, based on pseudocode from [1].
+        :param attribute_list:
         :param D:
         :param prev_node:
         :return: N, the new node
         '''
-        attribute_list = prev_node.attributes_list
-        #D = (prev_node.data, prev_node.labels)
+        # attribute_list = prev_node.attributes_list
+        # D = (prev_node.data, prev_node.labels)
 
         # check for termination cases
         # check if all tuples in D are in the same class
@@ -101,18 +100,20 @@ class C45Tree:
         N.depth = prev_node.depth + 1
         # conduct attribute selection method, label node with the criterion
         best_attribute = self.attribute_selection_method(D, attribute_list)  # TODO implement this
-        N.best_attribute = best_attribute # label node with best attribute
+        N.best_attribute = best_attribute  # label node with best attribute
         # remove split attribute from attribute list
         attribute_list.remove(best_attribute)
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
         if len(D[best_attribute].unique()) > 3:
-            # continuous
+            # continuous, divy up data at mid point of the values ai + ai1/2
+            l_part, r_part = self.continuous_attribute_data_partition(D, best_attribute)
+
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
             vals = D[best_attribute].unique()
 
             for v in vals:
-                data_part = self.partition_data(D,best_attribute,v)
+                data_part = self.partition_data(D, best_attribute, v)
                 if not data_part:
                     # majority class leaf node computed
                     L = Node(data_part[0], data_part[1], 'leaf')
@@ -125,7 +126,7 @@ class C45Tree:
                     L.parent = N
                 else:
                     # recursion
-                    child = self.grow_tree(N,data_part)
+                    child = self.grow_tree(N, attribute_list,data_part)
                     self.tree_nodes.append(child)
                     N.children.append(child)
                     N.parent = prev_node
@@ -133,6 +134,16 @@ class C45Tree:
         self.tree_nodes.append(N)
         prev_node.children.append(N)
         return N
+
+    def continuous_attribute_data_partition(self, D, attribute):
+        # sort the data, find the value that will gain the max info gain ratio
+        data = D.sort_values(by=[attribute])
+        split_val = 0
+
+        for i in range(len(data)):
+            data.iloc[i]
+
+        return l_part, r_part
 
     @staticmethod
     def check_same_class_labels(labels):
@@ -211,13 +222,14 @@ class C45Tree:
         return
 
     def partition_data(self, D, attribute, val):
-        part = []
+        part = D.loc[D[attribute] == val]
+        return part
 
-        for d in D:
+       ''' for d in D:
             if d[attribute] == val:
                 part.append(d)
+        '''
 
-        return part
 
 
 # Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
@@ -269,10 +281,9 @@ print(p_i)
 entr = system_test.data_entropy(y_train)
 print('data entropy', entr)
 
-
 # small sample of data
 x = x_train[:100]
 y = y_train[:100]
 
-system_test.train(x,y)
+system_test.train(x, y)
 print(system_test.tree_nodes)

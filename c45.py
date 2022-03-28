@@ -144,8 +144,8 @@ class C45Tree:
             for v in vals:
                 data_part = self.partition_data(D, best_attribute, v)
                 if not data_part:
-                    # majority class leaf node computed
-                    L = Node(data_part[0], data_part[1], 'leaf')
+                    # majority class leaf node computed of D
+                    L = Node(D[0], D[1], 'leaf')
                     L.depth = prev_node.depth + 1
                     L.best_attribute = best_attribute
                     L.split_criterion = v
@@ -372,6 +372,6 @@ for n in nodes_created:
     print(n.print_node())
 
 system_test.root_node.print_node()
-
+print(len(system_test.tree_nodes))
 #set_nodes = set(nodes_created)
 #print(len(set_nodes))

@@ -302,6 +302,7 @@ class C45Tree:
         # figure out how to enumerate root, to children nodes
         return
 
+
 # Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
 # make test and training splits THYROID dataset
 # declare tree, initialize root node / start training and growing the tree
@@ -410,7 +411,7 @@ for i in range(len(x_500)):
     if pred == y_500.iloc[i]:
         true_pred += 1
 print('train accuracy:',
-      true_pred / len(x_500))  # RANDOM SEED 42, train accuracy 0.956% with 100 samples test acc 0.9583
+      true_pred / len(x_500))  # RANDOM SEED 42, train accuracy 0.956% with 100 samples test acc 0.9583, 41 nodes
 
 testing_x = x_train[501:625]
 testing_y = y_train[501:625]
@@ -423,4 +424,4 @@ for j in range(len(testing_x)):
     print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
-print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677
+print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes

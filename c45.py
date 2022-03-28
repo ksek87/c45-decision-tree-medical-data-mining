@@ -44,6 +44,10 @@ class Node:
         self.leaf_label = pred_class
         return pred_class
 
+    def print_node(self):
+        print('best att-', self.best_attribute, 'split_crit-', self.split_criterion, 'type-', self.node_type, 'depth-',
+              self.depth, 'class label-', self.leaf_label)
+
 
 class C45Tree:
     def __init__(self, attributes, data):
@@ -83,6 +87,7 @@ class C45Tree:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
+            N.best_attribute = 'same class in partition'
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             N.parent = prev_node
@@ -94,6 +99,7 @@ class C45Tree:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
+            N.best_attribute = 'EMPTY ATT'
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             N.parent = prev_node
@@ -111,7 +117,8 @@ class C45Tree:
             attribute_list.remove(best_attribute)
 
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
-        if len(D[0][best_attribute].unique()) > 5: # 5 referral sources.... TODO map the discrete and continuous columns
+        if len(D[0][
+                   best_attribute].unique()) > 5:  # 5 referral sources.... TODO map the discrete and continuous columns
             # continuous, divy up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
@@ -141,6 +148,7 @@ class C45Tree:
                 else:
                     # recursion
                     child = self.grow_tree(N, attribute_list, data_part)
+                    N.best_attribute = 'empty data partition'
                     self.tree_nodes.append(child)
                     N.children.append(child)
                     N.parent = prev_node
@@ -157,7 +165,7 @@ class C45Tree:
         l_part = []
         r_part = []
 
-        for i in range(0,len(data)-1):
+        for i in range(0, len(data) - 1):
             mid_point = (float(data.iloc[i][attribute]) + float(data.iloc[i + 1][attribute])) / 2
             left_d = D[0].loc[pd.to_numeric(D[0][attribute]) > mid_point]
             left_idx = D[0].index[pd.to_numeric(D[0][attribute]) > mid_point]
@@ -187,7 +195,7 @@ class C45Tree:
         r_part_entropy = self.data_entropy(r_y)
         r_p_j = float(len(r_y) / len(D))
         r_ent = r_p_j * r_part_entropy
-        print(l_p_j,r_p_j)
+        print(l_p_j, r_p_j)
 
         split_info = - self.split_info(l_p_j) - self.split_info(r_p_j)
         att_ent = l_ent + r_ent
@@ -307,7 +315,7 @@ train_data = train_data.drop('index_dup', 1)
 
 train_data = train_data.replace('?', pd.NA)
 # TODO replace ? with most common value
-train_data = train_data.fillna(train_data.mode().iloc[0]) # [3]
+train_data = train_data.fillna(train_data.mode().iloc[0])  # [3]
 print(train_data['TSH'].unique())
 print(len(train_data))
 print(train_data.columns)
@@ -318,8 +326,6 @@ y_train = train_data.iloc[:, -1]
 y_train = y_train.replace('negative.', 'negative')
 y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
 y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
-
-
 
 print(y_train.head())
 print()
@@ -348,4 +354,8 @@ x = x_train[:100]
 y = y_train[:100]
 
 system_test.train(x, y)
-print(system_test.tree_nodes)
+print(len(system_test.tree_nodes))
+nodes_created = system_test.tree_nodes
+
+for n in nodes_created:
+    print(n.print_node())

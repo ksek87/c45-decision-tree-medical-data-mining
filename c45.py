@@ -106,8 +106,15 @@ class C45Tree:
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
         if len(D[best_attribute].unique()) > 3:
             # continuous, divy up data at mid point of the values ai + ai1/2
-            l_part, r_part = self.continuous_attribute_data_partition(D, best_attribute)
-
+            l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
+            N.split_criterion = split_val
+            l_child = self.grow_tree(N,attribute_list, l_part)
+            r_child = self.grow_tree(N, attribute_list, r_part)
+            self.tree_nodes.append(l_child)
+            N.children.append(l_child)
+            self.tree_nodes.append(r_child)
+            N.children.append(r_child)
+            N.parent = prev_node
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
             vals = D[best_attribute].unique()
@@ -137,13 +144,54 @@ class C45Tree:
 
     def continuous_attribute_data_partition(self, D, attribute):
         # sort the data, find the value that will gain the max info gain ratio
-        data = D.sort_values(by=[attribute])
+        data = D[0].sort_values(by=[attribute])
         split_val = 0
+        best_igr = 0
+        l_part = []
+        r_part = []
 
         for i in range(len(data)):
-            data.iloc[i]
+            mid_point = (data.iloc[i][attribute] + data.iloc[i+1][attribute])/2
+            left_d = D[0].loc[D[attribute] > mid_point]
+            left_idx = D[0].index[D[attribute] > mid_point]
+            left_y = D[1].loc[left_idx]
+            right_d = D[0].loc[D[attribute] <= mid_point]
+            right_idx = D[0].index[D[attribute] <= mid_point]
+            right_y = D[1].loc[right_idx]
+            igr = self.compute_info_gain_ratio_continuous(D,left_y, right_y)
 
-        return l_part, r_part
+            if igr >= best_igr:
+                best_igr = igr
+                split_val = mid_point
+                l_part = (left_d,left_y)
+                r_part = (right_d, right_y)
+
+        return l_part, r_part, split_val
+
+    def compute_info_gain_ratio_continuous(self,D,left_y, right_y):
+
+        l_y = left_y
+        r_y = right_y
+
+        dataset_entropy = self.data_entropy(D[1])
+        l_part_entropy = self.data_entropy(l_y)
+        l_p_j = float(len(l_y) / len(D))
+        l_ent = l_p_j * l_part_entropy
+        r_part_entropy = self.data_entropy(r_y)
+        r_p_j = float(len(r_y) / len(D))
+        r_ent = r_p_j * r_part_entropy
+        split_info = - self.split_info(l_p_j) - self.split_info(r_p_j)
+        att_ent = l_ent + r_ent
+
+        if split_info == 0:  # prevent division by zero for ratio
+            return 0
+        else:
+            info_gain = self.information_gain(dataset_entropy, att_ent)
+            info_gain_ratio = self.information_gain_ratio(info_gain,
+                                                      split_info)
+        return info_gain_ratio
+
+
 
     @staticmethod
     def check_same_class_labels(labels):
@@ -222,8 +270,10 @@ class C45Tree:
         return
 
     def partition_data(self, D, attribute, val):
-        part = D.loc[D[attribute] == val]
-        return part
+        part = D[0].loc[D[attribute] == val]
+        part_idx = D[0].index[D[attribute] == val]
+        part_y = D[1].loc[part_idx]
+        return part, part_y
 
        ''' for d in D:
             if d[attribute] == val:

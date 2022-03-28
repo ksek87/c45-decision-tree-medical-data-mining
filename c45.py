@@ -132,9 +132,9 @@ class C45Tree:
             N.split_criterion = split_val
             l_child = self.grow_tree(N, attribute_list, l_part)
             r_child = self.grow_tree(N, attribute_list, r_part)
-            self.tree_nodes.append(l_child)
+            #self.tree_nodes.append(l_child)
             N.children.append(l_child)
-            self.tree_nodes.append(r_child)
+            #self.tree_nodes.append(r_child)
             N.children.append(r_child)
             N.parent = prev_node
         else:
@@ -150,14 +150,14 @@ class C45Tree:
                     L.best_attribute = best_attribute
                     L.split_criterion = v
                     L.predict_leaf_class()  # determine the class of the leaf
-                    self.tree_nodes.append(L)
+                    #self.tree_nodes.append(L)
                     prev_node.children.append(L)
                     L.parent = N
                 else:
                     # recursion
                     child = self.grow_tree(N, attribute_list, data_part)
                     N.best_attribute = best_attribute
-                    self.tree_nodes.append(child)
+                    #self.tree_nodes.append(child)
                     N.children.append(child)
                     N.parent = prev_node
 

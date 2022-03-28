@@ -61,7 +61,7 @@ class C45Tree:
         self.root_node = Node(x_train, y_train, self.attributes, 'root')
         self.tree_nodes.append(self.root_node)
         # call grow_tree with root node as base
-        self.grow_tree(self.root_node, self.attributes,(x_train, y_train))
+        self.grow_tree(self.root_node, self.attributes, (x_train, y_train))
 
     def grow_tree(self, prev_node, attribute_list, D):
         '''
@@ -77,7 +77,7 @@ class C45Tree:
         # check for termination cases
         # check if all tuples in D are in the same class
         if self.check_same_class_labels(D[1]):
-            N = Node(D[0], D[1], 'leaf')
+            N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
             self.tree_nodes.append(N)
@@ -87,7 +87,7 @@ class C45Tree:
 
         # check if attribute list is empty, do majority voting on class
         if not attribute_list:
-            N = Node(D[0], D[1], 'leaf')
+            N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
             self.tree_nodes.append(N)
@@ -96,7 +96,7 @@ class C45Tree:
             return N
 
         # create new node
-        N = Node(D[0], D[1],attribute_list, 'node')
+        N = Node(D[0], D[1], attribute_list, 'node')
         N.depth = prev_node.depth + 1
         # conduct attribute selection method, label node with the criterion
         best_attribute = self.attribute_selection_method(D, attribute_list)  # TODO implement this
@@ -107,11 +107,11 @@ class C45Tree:
             attribute_list.remove(best_attribute)
 
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
-        if len(D[0][best_attribute].unique()) > 3:
+        if len(D[0][best_attribute].unique()) > 5: # 5 referral sources.... TODO map the discrete and continuous columns
             # continuous, divy up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
-            l_child = self.grow_tree(N,attribute_list, l_part)
+            l_child = self.grow_tree(N, attribute_list, l_part)
             r_child = self.grow_tree(N, attribute_list, r_part)
             self.tree_nodes.append(l_child)
             N.children.append(l_child)
@@ -136,7 +136,7 @@ class C45Tree:
                     L.parent = N
                 else:
                     # recursion
-                    child = self.grow_tree(N, attribute_list,data_part)
+                    child = self.grow_tree(N, attribute_list, data_part)
                     self.tree_nodes.append(child)
                     N.children.append(child)
                     N.parent = prev_node
@@ -154,24 +154,24 @@ class C45Tree:
         r_part = []
 
         for i in range(len(data)):
-            mid_point = (data.iloc[i][attribute] + data.iloc[i+1][attribute])/2
-            left_d = D[0].loc[D[attribute] > mid_point]
-            left_idx = D[0].index[D[attribute] > mid_point]
+            mid_point = int(data.iloc[i][attribute] + data.iloc[i + 1][attribute]) / 2
+            left_d = D[0].loc[D[0][attribute] > mid_point]
+            left_idx = D[0].index[D[0][attribute] > mid_point]
             left_y = D[1].loc[left_idx]
-            right_d = D[0].loc[D[attribute] <= mid_point]
-            right_idx = D[0].index[D[attribute] <= mid_point]
+            right_d = D[0].loc[D[0][attribute] <= mid_point]
+            right_idx = D[0].index[D[0][attribute] <= mid_point]
             right_y = D[1].loc[right_idx]
-            igr = self.compute_info_gain_ratio_continuous(D,left_y, right_y)
+            igr = self.compute_info_gain_ratio_continuous(D, left_y, right_y)
 
             if igr >= best_igr:
                 best_igr = igr
                 split_val = mid_point
-                l_part = (left_d,left_y)
+                l_part = (left_d, left_y)
                 r_part = (right_d, right_y)
 
         return l_part, r_part, split_val
 
-    def compute_info_gain_ratio_continuous(self,D,left_y, right_y):
+    def compute_info_gain_ratio_continuous(self, D, left_y, right_y):
 
         l_y = left_y
         r_y = right_y
@@ -191,10 +191,8 @@ class C45Tree:
         else:
             info_gain = self.information_gain(dataset_entropy, att_ent)
             info_gain_ratio = self.information_gain_ratio(info_gain,
-                                                      split_info)
+                                                          split_info)
         return info_gain_ratio
-
-
 
     @staticmethod
     def check_same_class_labels(labels):
@@ -225,13 +223,11 @@ class C45Tree:
                 partition_labels = data_partition[1]
                 part_entropy = self.data_entropy(partition_labels)
                 p_j = float(len(data_partition[1]) / len(D[1]))
-                print('p_j',p_j)
                 att_ent = att_ent + (p_j * part_entropy)
                 split_info = split_info - self.split_info(p_j)
 
             # Best Attribute checks
             if split_info == 0:  # prevent division by zero for ratio
-                print('split info fail')
                 continue
             else:
                 info_gain = self.information_gain(dataset_entropy, att_ent)
@@ -283,8 +279,6 @@ class C45Tree:
         return part, part_y
 
 
-
-
 # Main experiment routine, read dataset, dropna values using pandas, split x and y matrices to pass in to tree
 # make test and training splits THYROID dataset
 # declare tree, initialize root node / start training and growing the tree
@@ -306,7 +300,7 @@ train_data = train_data.drop('index_dup', 1)
 # CONSIDER CHANGING DATA TO ONLY NUMERIC TYPE?
 print(len(train_data))
 print(train_data.columns)
-
+print(train_data['referral source'].unique())
 x_train = train_data.iloc[:, :-1]
 y_train = train_data.iloc[:, -1]
 y_train = y_train.replace('negative.', 'negative')
@@ -315,10 +309,10 @@ y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  p
 print(y_train.head())
 print()
 # TESTS
-node_test = Node(x_train, y_train,column_names[:-1], 'root')
+node_test = Node(x_train, y_train, column_names[:-1], 'root')
 print(node_test.__dict__)
 print()
-system_test = C45Tree(column_names,train_data)
+system_test = C45Tree(column_names, train_data)
 print(system_test.__dict__)
 
 print(system_test.check_same_class_labels(y_train))  # good

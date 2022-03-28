@@ -61,7 +61,7 @@ class C45Tree:
         self.root_node = Node(x_train, y_train, self.attributes, 'root')
         self.tree_nodes.append(self.root_node)
         # call grow_tree with root node as base
-        self.grow_tree(self.root_node, (x_train, y_train))
+        self.grow_tree(self.root_node, self.attributes,(x_train, y_train))
 
     def grow_tree(self, prev_node, attribute_list, D):
         '''
@@ -96,15 +96,18 @@ class C45Tree:
             return N
 
         # create new node
-        N = Node(D[0], D[1], 'node')
+        N = Node(D[0], D[1],attribute_list, 'node')
         N.depth = prev_node.depth + 1
         # conduct attribute selection method, label node with the criterion
         best_attribute = self.attribute_selection_method(D, attribute_list)  # TODO implement this
         N.best_attribute = best_attribute  # label node with best attribute
         # remove split attribute from attribute list
-        attribute_list.remove(best_attribute)
+        print(attribute_list)
+        if best_attribute in attribute_list:
+            attribute_list.remove(best_attribute)
+
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
-        if len(D[best_attribute].unique()) > 3:
+        if len(D[0][best_attribute].unique()) > 3:
             # continuous, divy up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
@@ -117,7 +120,7 @@ class C45Tree:
             N.parent = prev_node
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
-            vals = D[best_attribute].unique()
+            vals = D[0][best_attribute].unique()
 
             for v in vals:
                 data_part = self.partition_data(D, best_attribute, v)
@@ -221,12 +224,14 @@ class C45Tree:
                 data_partition = self.partition_data(D, attribute, val)
                 partition_labels = data_partition[1]
                 part_entropy = self.data_entropy(partition_labels)
-                p_j = float(len(data_partition) / len(D))
+                p_j = float(len(data_partition[1]) / len(D[1]))
+                print('p_j',p_j)
                 att_ent = att_ent + (p_j * part_entropy)
                 split_info = split_info - self.split_info(p_j)
 
             # Best Attribute checks
             if split_info == 0:  # prevent division by zero for ratio
+                print('split info fail')
                 continue
             else:
                 info_gain = self.information_gain(dataset_entropy, att_ent)
@@ -238,6 +243,7 @@ class C45Tree:
                 best_info_gain_ratio = info_gain_ratio
                 best_attribute = attribute
 
+        print('best ATtribute', best_attribute)
         return best_attribute
 
     def class_prob(self, feature_label, labels):
@@ -260,6 +266,7 @@ class C45Tree:
 
     def split_info(self, p_j):
         info_split = (p_j * math.log(p_j, 2))
+        print(info_split)
         return info_split
 
     def information_gain_ratio(self, gain, split_info):
@@ -270,15 +277,11 @@ class C45Tree:
         return
 
     def partition_data(self, D, attribute, val):
-        part = D[0].loc[D[attribute] == val]
-        part_idx = D[0].index[D[attribute] == val]
+        part = D[0].loc[D[0][attribute] == val]
+        part_idx = D[0].index[D[0][attribute] == val]
         part_y = D[1].loc[part_idx]
         return part, part_y
 
-       ''' for d in D:
-            if d[attribute] == val:
-                part.append(d)
-        '''
 
 
 
@@ -312,10 +315,10 @@ y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  p
 print(y_train.head())
 print()
 # TESTS
-node_test = Node(x_train, y_train, 'root')
+node_test = Node(x_train, y_train,column_names[:-1], 'root')
 print(node_test.__dict__)
 print()
-system_test = C45Tree(column_names)
+system_test = C45Tree(column_names,train_data)
 print(system_test.__dict__)
 
 print(system_test.check_same_class_labels(y_train))  # good

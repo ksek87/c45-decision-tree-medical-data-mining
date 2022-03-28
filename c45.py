@@ -22,6 +22,7 @@ import itertools
 import math
 import csv
 import collections
+from sklearn .utils import shuffle
 
 
 class Node:
@@ -98,6 +99,7 @@ class C45Tree:
         if not attribute_list:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
+            print('check for length of partition',len(D[0]))
             N.predict_leaf_class()  # determine the class of the leaf
             N.best_attribute = 'EMPTY ATT'
             self.tree_nodes.append(N)
@@ -111,6 +113,12 @@ class C45Tree:
         # conduct attribute selection method, label node with the criterion
         best_attribute = self.attribute_selection_method(D, attribute_list)  # TODO implement this
         N.best_attribute = best_attribute  # label node with best attribute
+        if best_attribute == '':
+            # early stop
+            self.tree_nodes.append(N)
+            prev_node.children.append(N)
+            return N
+
         # remove split attribute from attribute list
         print(attribute_list)
         if best_attribute in attribute_list:
@@ -148,7 +156,7 @@ class C45Tree:
                 else:
                     # recursion
                     child = self.grow_tree(N, attribute_list, data_part)
-                    N.best_attribute = 'empty data partition'
+                    N.best_attribute = best_attribute
                     self.tree_nodes.append(child)
                     N.children.append(child)
                     N.parent = prev_node
@@ -220,7 +228,7 @@ class C45Tree:
         return
 
     def attribute_selection_method(self, D, attribute_list):
-        best_attribute = attribute_list[0]
+        best_attribute = '' #attribute_list[0]
         dataset_entropy = self.data_entropy(D[1])
         splitting_criterion = ""
         best_info_gain_ratio = 0.0
@@ -321,6 +329,9 @@ print(len(train_data))
 print(train_data.columns)
 print(train_data['referral source'].unique())
 print(train_data.dtypes)
+
+train_data = shuffle(train_data)
+
 x_train = train_data.iloc[:, :-1]
 y_train = train_data.iloc[:, -1]
 y_train = y_train.replace('negative.', 'negative')
@@ -359,3 +370,8 @@ nodes_created = system_test.tree_nodes
 
 for n in nodes_created:
     print(n.print_node())
+
+system_test.root_node.print_node()
+
+#set_nodes = set(nodes_created)
+#print(len(set_nodes))

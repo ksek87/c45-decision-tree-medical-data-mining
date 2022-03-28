@@ -155,11 +155,11 @@ class C45Tree:
 
         for i in range(len(data)):
             mid_point = int(data.iloc[i][attribute] + data.iloc[i + 1][attribute]) / 2
-            left_d = D[0].loc[D[0][attribute] > mid_point]
-            left_idx = D[0].index[D[0][attribute] > mid_point]
+            left_d = D[0].loc[pd.to_numeric(D[0][attribute]) > mid_point]
+            left_idx = D[0].index[pd.to_numeric(D[0][attribute]) > mid_point]
             left_y = D[1].loc[left_idx]
-            right_d = D[0].loc[D[0][attribute] <= mid_point]
-            right_idx = D[0].index[D[0][attribute] <= mid_point]
+            right_d = D[0].loc[pd.to_numeric(D[0][attribute]) <= mid_point]
+            right_idx = D[0].index[pd.to_numeric(D[0][attribute]) <= mid_point]
             right_y = D[1].loc[right_idx]
             igr = self.compute_info_gain_ratio_continuous(D, left_y, right_y)
 
@@ -183,6 +183,8 @@ class C45Tree:
         r_part_entropy = self.data_entropy(r_y)
         r_p_j = float(len(r_y) / len(D))
         r_ent = r_p_j * r_part_entropy
+        print(l_p_j,r_p_j)
+
         split_info = - self.split_info(l_p_j) - self.split_info(r_p_j)
         att_ent = l_ent + r_ent
 
@@ -253,7 +255,6 @@ class C45Tree:
         for l in class_freq.keys():
             p = float(class_freq[l] / len(labels))
             entropy = entropy - math.log(p, 2)
-
         return entropy
 
     def information_gain(self, dataset_entropy, attribute_entropy):
@@ -261,6 +262,10 @@ class C45Tree:
         return gain
 
     def split_info(self, p_j):
+        # error protection for zero case
+        if p_j == 0:
+            return 0
+
         info_split = (p_j * math.log(p_j, 2))
         print(info_split)
         return info_split

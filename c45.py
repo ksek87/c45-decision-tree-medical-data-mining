@@ -86,6 +86,7 @@ class C45Tree:
             return N
 
         # check if attribute list is empty, do majority voting on class
+        print(attribute_list, 'EMPTY CHECK')
         if not attribute_list:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
@@ -153,7 +154,7 @@ class C45Tree:
         l_part = []
         r_part = []
 
-        for i in range(len(data)):
+        for i in range(0,len(data)-1):
             mid_point = int(data.iloc[i][attribute] + data.iloc[i + 1][attribute]) / 2
             left_d = D[0].loc[pd.to_numeric(D[0][attribute]) > mid_point]
             left_idx = D[0].index[pd.to_numeric(D[0][attribute]) > mid_point]
@@ -208,7 +209,7 @@ class C45Tree:
         return
 
     def attribute_selection_method(self, D, attribute_list):
-        best_attribute = ''
+        best_attribute = attribute_list[0]
         dataset_entropy = self.data_entropy(D[1])
         splitting_criterion = ""
         best_info_gain_ratio = 0.0

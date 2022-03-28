@@ -330,6 +330,7 @@ print(train_data.columns)
 print(train_data['referral source'].unique())
 print(train_data.dtypes)
 
+np.random.seed(42) # replicate results
 train_data = shuffle(train_data)
 
 x_train = train_data.iloc[:, :-1]
@@ -373,5 +374,6 @@ for n in nodes_created:
 
 system_test.root_node.print_node()
 print(len(system_test.tree_nodes))
+print(len(set(nodes_created)))
 #set_nodes = set(nodes_created)
 #print(len(set_nodes))

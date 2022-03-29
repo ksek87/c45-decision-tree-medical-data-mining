@@ -92,7 +92,7 @@ class C45Tree:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
-            N.best_attribute = str(prev_node.best_attribute + ' same class partition')
+            N.best_attribute = str(prev_node.best_attribute)
             N.split_criterion = prev_node.split_criterion
             self.tree_nodes.append(N)
             prev_node.children.append(N)
@@ -104,7 +104,7 @@ class C45Tree:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
-            N.best_attribute = str(prev_node.best_attribute + ' empty atts')
+            N.best_attribute = str(prev_node.best_attribute)
             N.split_criterion = prev_node.split_criterion
             self.tree_nodes.append(N)
             prev_node.children.append(N)
@@ -119,7 +119,7 @@ class C45Tree:
         N.best_attribute = best_attribute  # label node with best attribute
         if best_attribute == '':
             # early stop
-            N.best_attribute = str(best_attribute + ' early stop atts')
+            N.best_attribute = str(best_attribute)
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             return N

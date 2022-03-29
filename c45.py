@@ -38,6 +38,10 @@ class Node:
         self.parent = None
 
     def predict_leaf_class(self):
+        """
+            Computes the frequency of classes in partition D, output the leaf node label predicted class
+        :return: pred_class
+        """
         # takes frequency of classes in D to determine the majority class to set as output leaf label
         freq_classes = collections.Counter(self.labels)  # [4]
         pred_class = max(freq_classes, key=freq_classes.get)
@@ -45,6 +49,9 @@ class Node:
         return pred_class
 
     def print_node(self):
+        """
+            Print node values
+        """
         print('best att-', self.best_attribute, 'split_crit-', self.split_criterion, 'type-', self.node_type, 'depth-',
               self.depth, 'class label-', self.leaf_label)
 
@@ -71,13 +78,13 @@ class C45Tree:
         self.grow_tree(self.root_node, self.attributes, (x_train, y_train))
 
     def grow_tree(self, prev_node, attribute_list, D):
-        '''
+        """
             Uses C4.5 decision tree algorithm to grow a tree during training, based on pseudocode from [1].
         :param attribute_list:
         :param D:
         :param prev_node:
         :return: N, the new node
-        '''
+        """
 
         # check for termination cases
         # check if all tuples in D are in the same class
@@ -161,6 +168,13 @@ class C45Tree:
         return N
 
     def continuous_attribute_data_partition(self, D, attribute):
+        """
+            Creates data partitions (left and right) for continuous attributes, computing the mid point that
+            enables the best information gain ratio to be calculated from the partition.
+        :param D:
+        :param attribute:
+        :return: l_part, r_part, split_val
+        """
         # sort the data, find the value that will gain the max info gain ratio
         data = D[0].sort_values(by=[attribute])
         split_val = 0
@@ -187,6 +201,10 @@ class C45Tree:
         return l_part, r_part, split_val
 
     def compute_info_gain_ratio_continuous(self, D, left_y, right_y):
+        """
+            Computes the information gain ratio for a continuous attribute partition
+        :return info_gain_ratio
+        """
         l_y = left_y
         r_y = right_y
 
@@ -211,12 +229,24 @@ class C45Tree:
 
     @staticmethod
     def check_same_class_labels(labels):
+        """
+            Checks set of labels to ensure they are of the same class type
+        :param labels:
+        :return: bool
+        """
         if len(set(labels)) == 1:
             return True
         else:
             return False
 
     def attribute_selection_method(self, D, attribute_list):
+        """
+            Attribute Selection Method for decision tree as discussed in [1] (Figure 8.3), selects attribute that
+            provides the best information gain ratio as a result.
+        :param D:
+        :param attribute_list:
+        :return: best_attribute
+        """
         best_attribute = ''
         dataset_entropy = self.data_entropy(D[1])
         splitting_criterion = ""
@@ -253,11 +283,22 @@ class C45Tree:
         return best_attribute
 
     def class_prob(self, feature_label, labels):
+        """
+            Computes class probabilities from labels
+        :param feature_label:
+        :param labels:
+        :return: p
+        """
         c = collections.Counter(labels)  # [4]
         p = c[feature_label] / len(labels)
         return float(p)
 
     def data_entropy(self, labels):
+        """
+            Computes the Entropy, or Info(D) [1]
+        :param labels:
+        :return: entropy
+        """
         entropy = 0.0
         class_freq = collections.Counter(labels)  # [4]
         for l in class_freq.keys():
@@ -266,10 +307,21 @@ class C45Tree:
         return entropy
 
     def information_gain(self, dataset_entropy, attribute_entropy):
+        """
+            Computes information gain based on the data entropy and attribute entropy [1]
+        :param dataset_entropy:
+        :param attribute_entropy:
+        :return: gain
+        """
         gain = dataset_entropy - attribute_entropy
         return gain
 
     def split_info(self, p_j):
+        """
+            Computes the information split, used in gain ratio [1]
+        :param p_j:
+        :return: info_split
+        """
         # error protection for zero case
         if p_j == 0:
             return 0
@@ -278,16 +330,36 @@ class C45Tree:
         return info_split
 
     def information_gain_ratio(self, gain, split_info):
+        """
+            Computes information gain ratio [1]
+        :param gain:
+        :param split_info:
+        :return:
+        """
         gain_ratio = float(gain / split_info)
         return gain_ratio
 
     def partition_data(self, D, attribute, val):
+        """
+            Partitions a dataset D based on the value of a specific attribute
+        :param D:
+        :param attribute:
+        :param val:
+        :return: part, part_y
+        """
         part = D[0].loc[D[0][attribute] == val]
         part_idx = D[0].index[D[0][attribute] == val]
         part_y = D[1].loc[part_idx]
         return part, part_y
 
     def test_tree(self, test_sample, node):
+        """
+            Using recursion, we go through each node (from the root through to the children) to find a leaf label
+            to classify the test sample as a prediction.
+        :param test_sample:
+        :param node:
+        :return: node.leaf_label, or recursion
+        """
         if node.node_type == 'leaf':
             return node.leaf_label
         else:

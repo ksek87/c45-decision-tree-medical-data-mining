@@ -154,8 +154,8 @@ class C45Tree:
                     L.best_attribute = best_attribute
                     L.split_criterion = v
                     L.predict_leaf_class()  # determine the class of the leaf
-                    # self.tree_nodes.append(L)
-                    prev_node.children.append(L)
+                    self.tree_nodes.append(L)
+                    N.children.append(L)
                     L.parent = N
                 else:
                     # recursion
@@ -444,10 +444,12 @@ system_test.train(x, y)
 f_out.write('Number of Nodes for 100 sample tree:'+str(len(system_test.tree_nodes))+'\n')
 nodes_created = system_test.tree_nodes
 
-
+leaf_count = 0
 for n in nodes_created:
     print(n.print_node())
-
+    if n.node_type == 'leaf':
+        leaf_count += 1
+print('leaves',leaf_count)
 print(len(system_test.tree_nodes))
 print(len(set(nodes_created)))
 
@@ -482,7 +484,7 @@ x_500 = x_train[:500]
 y_500 = y_train[:500]
 system_test500 = C45Tree(column_names, train_data)
 system_test500.train(x_500, y_500)
-print('system500 nodes:', len(system_test500.tree_nodes))
+print('system500 nodes:', len(system_test500.tree_nodes), len(set(system_test500.tree_nodes)))
 f_out.write('Number of nodes:'+str(len(system_test500.tree_nodes))+'\n')
 print('validating using the training data....')
 true_pred = 0
@@ -508,5 +510,13 @@ for j in range(len(testing_x)):
     if pred == testing_y.iloc[j]:
         true_pred += 1
 print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes
+
+leaf_count = 0
+for n in system_test500.tree_nodes:
+    print(n.print_node())
+    if n.node_type == 'leaf':
+        leaf_count += 1
+print('leaves',leaf_count)
+
 f_out.write('\t Test Accuracy'+str(true_pred/len(testing_x)))
 f_out.close()

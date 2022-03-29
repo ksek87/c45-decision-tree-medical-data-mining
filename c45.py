@@ -132,8 +132,8 @@ class C45Tree:
             # continuous, divide up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
-            l_child = self.grow_tree(N, attribute_list, l_part)
-            r_child = self.grow_tree(N, attribute_list, r_part)
+            l_child = self.grow_tree(N, attribute_list, l_part) # upper -> att_val > split_val
+            r_child = self.grow_tree(N, attribute_list, r_part) # lower -> att_val <= split_val
             # self.tree_nodes.append(l_child)
             # N.children.append(l_child)
             # self.tree_nodes.append(r_child)
@@ -159,6 +159,7 @@ class C45Tree:
                     # recursion
                     child = self.grow_tree(N, attribute_list, data_part)
                     N.best_attribute = best_attribute
+                    N.split_criterion = v
                     # self.tree_nodes.append(child)
                     # N.children.append(child)
                     N.parent = prev_node
@@ -364,7 +365,9 @@ class C45Tree:
             return node.leaf_label
         else:
             for child in node.children:
-                return self.test_tree(test_sample, child)
+                # check criterion at each node, save the index then call on specific index child
+                if child.
+                    return self.test_tree(test_sample, child)
 
     def predict(self, test_data):  # TODO Add this functionality from the code in main routine
         # uses test set to predict class labels from the constructed tree

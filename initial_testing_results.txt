@@ -1,6 +1,5 @@
 First Test: 100 Samples training, 24 Test Samples
 Number of Nodes for 100 sample tree:41
-Validation with Train Data...
 Training Accuracy:0.94	Test Accuracy:0.9583333333333334
 
 First Test: 500 Samples training, 124 Test Samples

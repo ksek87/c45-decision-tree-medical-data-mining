@@ -92,7 +92,8 @@ class C45Tree:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
-            N.best_attribute = 'same class in partition'
+            N.best_attribute = str(prev_node.best_attribute + ' same class partition')
+            N.split_criterion = prev_node.split_criterion
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             N.parent = prev_node
@@ -103,7 +104,8 @@ class C45Tree:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
-            N.best_attribute = 'empty'
+            N.best_attribute = str(prev_node.best_attribute + ' empty atts')
+            N.split_criterion = prev_node.split_criterion
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             N.parent = prev_node
@@ -117,6 +119,7 @@ class C45Tree:
         N.best_attribute = best_attribute  # label node with best attribute
         if best_attribute == '':
             # early stop
+            N.best_attribute = str(best_attribute + ' early stop atts')
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             return N
@@ -156,12 +159,13 @@ class C45Tree:
                     L.parent = N
                 else:
                     # recursion
-                    child = self.grow_tree(N, attribute_list, data_part)
                     N.best_attribute = best_attribute
                     N.split_criterion = v
+                    N.parent = prev_node
+                    child = self.grow_tree(N, attribute_list, data_part)
                     # self.tree_nodes.append(child)
                     # N.children.append(child)
-                    N.parent = prev_node
+
 
         self.tree_nodes.append(N)
         prev_node.children.append(N)
@@ -365,8 +369,8 @@ class C45Tree:
         else:
             for child in node.children:
                 # check criterion at each node, save the index then call on specific index child
-                if child.
-                    return self.test_tree(test_sample, child)
+                #if child.
+                return self.test_tree(test_sample, child)
 
     def predict(self, test_data):  # TODO Add this functionality from the code in main routine
         # uses test set to predict class labels from the constructed tree
@@ -440,21 +444,21 @@ system_test.train(x, y)
 f_out.write('Number of Nodes for 100 sample tree:'+str(len(system_test.tree_nodes))+'\n')
 nodes_created = system_test.tree_nodes
 
-'''
+
 for n in nodes_created:
     print(n.print_node())
-'''
+
 print(len(system_test.tree_nodes))
 print(len(set(nodes_created)))
 
-tester_instance = x_train.iloc[0]
-pred = system_test.test_tree(tester_instance, system_test.root_node)
+#tester_instance = x_train.iloc[0]
+#pred = system_test.test_tree(tester_instance, system_test.root_node)
 
 true_pred = 0
 for i in range(len(x)):
     tester_instance = x.iloc[i]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    print(str(i), 'pred', pred, 'label', y.iloc[i])
+    #print(str(i), 'pred', pred, 'label', y.iloc[i])
     if pred == y.iloc[i]:
         true_pred += 1
 print('train accuracy:', true_pred / len(x))  # RANDOM SEED 24, train accuracy 0.95% with 100 samples
@@ -467,7 +471,7 @@ true_pred = 0
 for j in range(len(testing_x)):
     tester_instance = testing_x.iloc[j]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    #print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
 print('test accuracy:', true_pred / len(testing_x))
@@ -485,7 +489,7 @@ true_pred = 0
 for i in range(len(x_500)):
     tester_instance = x_500.iloc[i]
     pred = system_test500.test_tree(tester_instance, system_test.root_node)
-    print(str(i), 'pred', pred, 'label', y_500.iloc[i])
+    #print(str(i), 'pred', pred, 'label', y_500.iloc[i])
     if pred == y_500.iloc[i]:
         true_pred += 1
 print('train accuracy:',
@@ -500,7 +504,7 @@ true_pred = 0
 for j in range(len(testing_x)):
     tester_instance = testing_x.iloc[j]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    #print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
 print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes

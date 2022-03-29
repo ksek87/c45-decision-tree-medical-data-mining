@@ -7,7 +7,7 @@
 
     Data Source:
     - UCI Machine Learning Repository, Thyroid Disease Data Set https://archive.ics.uci.edu/ml/datasets/thyroid+disease
-        Using allbp.data file
+        (Using allbp.data and allbp.test files, 2800 instances in training)
 
     References Consulted:
     [1] Data Mining (3rd Edition) Chapter 8 https://doi-org.ezproxy.library.dal.ca/10.1016/B978-0-12-381479-1.00008-3
@@ -438,17 +438,16 @@ system_test.train(x, y)
 f_out.write('Number of Nodes for 100 sample tree:'+str(len(system_test.tree_nodes))+'\n')
 nodes_created = system_test.tree_nodes
 
+'''
 for n in nodes_created:
     print(n.print_node())
-
+'''
 print(len(system_test.tree_nodes))
 print(len(set(nodes_created)))
 
 tester_instance = x_train.iloc[0]
 pred = system_test.test_tree(tester_instance, system_test.root_node)
 
-print('validating using the training data....')
-f_out.write('Validation with Train Data...\n')
 true_pred = 0
 for i in range(len(x)):
     tester_instance = x.iloc[i]

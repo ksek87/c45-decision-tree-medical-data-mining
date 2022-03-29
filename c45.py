@@ -102,9 +102,8 @@ class C45Tree:
         if not attribute_list:
             N = Node(D[0], D[1], attribute_list, 'leaf')
             N.depth = prev_node.depth + 1
-            print('check for length of partition', len(D[0]))
             N.predict_leaf_class()  # determine the class of the leaf
-            N.best_attribute = 'EMPTY ATT'
+            N.best_attribute = 'empty'
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             N.parent = prev_node

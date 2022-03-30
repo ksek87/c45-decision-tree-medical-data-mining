@@ -31,11 +31,15 @@ class Node:
         self.attributes_list = attribute_list
         self.best_attribute = None
         self.split_criterion = None
+        self.split_up_down = ''
         self.node_type = node_type
         self.leaf_label = None
         self.depth = 0
         self.children = []
         self.parent = None
+
+    def __lt__(self, other):
+        return self.depth < other.depth
 
     def predict_leaf_class(self):
         """
@@ -52,7 +56,8 @@ class Node:
         """
             Print node values
         """
-        print('best att-', self.best_attribute, 'split_crit-', self.split_criterion, 'type-', self.node_type, 'depth-',
+        print('best att-', self.best_attribute, 'split_crit-', self.split_up_down, self.split_criterion, 'type-',
+              self.node_type, 'depth-',
               self.depth, 'class label-', self.leaf_label)
 
 
@@ -93,6 +98,7 @@ class C45Tree:
             N.depth = prev_node.depth + 1
             N.predict_leaf_class()  # determine the class of the leaf
             N.best_attribute = str(prev_node.best_attribute)
+            N.split_up_down = prev_node.split_up_down
             N.split_criterion = prev_node.split_criterion
             self.tree_nodes.append(N)
             prev_node.children.append(N)
@@ -106,6 +112,7 @@ class C45Tree:
             N.predict_leaf_class()  # determine the class of the leaf
             N.best_attribute = str(prev_node.best_attribute)
             N.split_criterion = prev_node.split_criterion
+            N.split_up_down = prev_node.split_up_down
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             N.parent = prev_node
@@ -120,6 +127,7 @@ class C45Tree:
         if best_attribute == '':
             # early stop
             N.best_attribute = str(best_attribute)
+            N.split_up_down = prev_node.split_up_down
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             return N
@@ -134,8 +142,11 @@ class C45Tree:
             # continuous, divide up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
-            l_child = self.grow_tree(N, attribute_list, l_part) # upper -> att_val > split_val
-            r_child = self.grow_tree(N, attribute_list, r_part) # lower -> att_val <= split_val
+            N.split_up_down = 'att_val >'
+            l_child = self.grow_tree(N, attribute_list, l_part)  # upper -> att_val > split_val
+            N.split_up_down = 'att_val <='
+            r_child = self.grow_tree(N, attribute_list, r_part)  # lower -> att_val <= split_val
+            N.split_up_down = 'att_val >'
             # self.tree_nodes.append(l_child)
             # N.children.append(l_child)
             # self.tree_nodes.append(r_child)
@@ -165,7 +176,6 @@ class C45Tree:
                     child = self.grow_tree(N, attribute_list, data_part)
                     # self.tree_nodes.append(child)
                     # N.children.append(child)
-
 
         self.tree_nodes.append(N)
         prev_node.children.append(N)
@@ -369,7 +379,7 @@ class C45Tree:
         else:
             for child in node.children:
                 # check criterion at each node, save the index then call on specific index child
-                #if child.
+                # if child.
                 return self.test_tree(test_sample, child)
 
     def predict(self, test_data):  # TODO Add this functionality from the code in main routine
@@ -432,7 +442,7 @@ print(p_i)
 entr = system_test.data_entropy(y_train)
 print('data entropy', entr)
 '''
-f_out = open('initial_testing_results.txt','w')
+f_out = open('initial_testing_results.txt', 'w')
 
 # small sample of data
 f_out.write('First Test: 100 Samples training, 24 Test Samples\n')
@@ -441,30 +451,30 @@ y = y_train[:100]
 
 print('system_test:')
 system_test.train(x, y)
-f_out.write('Number of Nodes for 100 sample tree:'+str(len(system_test.tree_nodes))+'\n')
+f_out.write('Number of Nodes for 100 sample tree:' + str(len(system_test.tree_nodes)) + '\n')
 nodes_created = system_test.tree_nodes
 
 leaf_count = 0
 for n in nodes_created:
-    print(n.print_node())
+    # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
-print('leaves',leaf_count)
+print('leaves', leaf_count)
 print(len(system_test.tree_nodes))
 print(len(set(nodes_created)))
 
-#tester_instance = x_train.iloc[0]
-#pred = system_test.test_tree(tester_instance, system_test.root_node)
+# tester_instance = x_train.iloc[0]
+# pred = system_test.test_tree(tester_instance, system_test.root_node)
 
 true_pred = 0
 for i in range(len(x)):
     tester_instance = x.iloc[i]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    #print(str(i), 'pred', pred, 'label', y.iloc[i])
+    # print(str(i), 'pred', pred, 'label', y.iloc[i])
     if pred == y.iloc[i]:
         true_pred += 1
 print('train accuracy:', true_pred / len(x))  # RANDOM SEED 24, train accuracy 0.95% with 100 samples
-f_out.write('Training Accuracy:'+str(true_pred/len(x)))
+f_out.write('Training Accuracy:' + str(true_pred / len(x)))
 testing_x = x_train[101:125]
 testing_y = y_train[101:125]
 
@@ -473,11 +483,11 @@ true_pred = 0
 for j in range(len(testing_x)):
     tester_instance = testing_x.iloc[j]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    #print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
 print('test accuracy:', true_pred / len(testing_x))
-f_out.write('\tTest Accuracy:'+str(true_pred/len(testing_x))+'\n')
+f_out.write('\tTest Accuracy:' + str(true_pred / len(testing_x)) + '\n')
 f_out.write('\nFirst Test: 500 Samples training, 124 Test Samples\n')
 print('500 sample tests:')
 x_500 = x_train[:500]
@@ -485,19 +495,19 @@ y_500 = y_train[:500]
 system_test500 = C45Tree(column_names, train_data)
 system_test500.train(x_500, y_500)
 print('system500 nodes:', len(system_test500.tree_nodes), len(set(system_test500.tree_nodes)))
-f_out.write('Number of nodes:'+str(len(system_test500.tree_nodes))+'\n')
+f_out.write('Number of nodes:' + str(len(system_test500.tree_nodes)) + '\n')
 print('validating using the training data....')
 true_pred = 0
 for i in range(len(x_500)):
     tester_instance = x_500.iloc[i]
     pred = system_test500.test_tree(tester_instance, system_test.root_node)
-    #print(str(i), 'pred', pred, 'label', y_500.iloc[i])
+    # print(str(i), 'pred', pred, 'label', y_500.iloc[i])
     if pred == y_500.iloc[i]:
         true_pred += 1
 print('train accuracy:',
       true_pred / len(x_500))  # RANDOM SEED 42, train accuracy 0.956% with 100 samples test acc 0.9583, 41 nodes
 
-f_out.write('Train Accuracy:'+str(true_pred/len(x_500)))
+f_out.write('Train Accuracy:' + str(true_pred / len(x_500)))
 testing_x = x_train[501:625]
 testing_y = y_train[501:625]
 
@@ -506,17 +516,26 @@ true_pred = 0
 for j in range(len(testing_x)):
     tester_instance = testing_x.iloc[j]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    #print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
 print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes
 
 leaf_count = 0
 for n in system_test500.tree_nodes:
-    print(n.print_node())
+    # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
-print('leaves',leaf_count)
+print('leaves', leaf_count)
 
-f_out.write('\t Test Accuracy'+str(true_pred/len(testing_x)))
+f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
 f_out.close()
+
+nodes_created = sorted(nodes_created)
+for n in nodes_created:
+    print('Node:')
+    n.print_node()
+    if n.children:
+        for d in n.children:
+            d.print_node()
+    print()

@@ -31,7 +31,7 @@ class Node:
         self.attributes_list = attribute_list
         self.best_attribute = None
         self.split_criterion = None
-        self.split_up_down = ''
+        self.split_up_down = None
         self.node_type = node_type
         self.leaf_label = None
         self.depth = 0
@@ -60,6 +60,9 @@ class Node:
               self.node_type, 'depth-',
               self.depth, 'class label-', self.leaf_label)
 
+    def copy(self):
+        pass
+
 
 class C45Tree:
     def __init__(self, attributes, data):
@@ -68,6 +71,7 @@ class C45Tree:
         self.num_leaves = 0
         self.root_node = None
         self.attributes = attributes[:-1]
+        self.dataset = data
 
     def train(self, x_train, y_train):
         """
@@ -90,6 +94,9 @@ class C45Tree:
         :param prev_node:
         :return: N, the new node
         """
+        if (prev_node is not None and prev_node.parent is not None):
+            if prev_node not in prev_node.parent.children:
+                prev_node.parent.children.append(prev_node)
 
         # check for termination cases
         # check if all tuples in D are in the same class
@@ -121,13 +128,17 @@ class C45Tree:
         # create new node
         N = Node(D[0], D[1], attribute_list, 'node')
         N.depth = prev_node.depth + 1
+        N.parent = prev_node
         # conduct attribute selection method, label node with the criterion
         best_attribute = self.attribute_selection_method(D, attribute_list)
+        if prev_node.node_type == 'root':
+            print(best_attribute)
+
         N.best_attribute = best_attribute  # label node with best attribute
         if best_attribute == '':
             # early stop
             N.best_attribute = str(best_attribute)
-            N.split_up_down = prev_node.split_up_down
+            N.split_up_down = None
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             return N
@@ -137,31 +148,29 @@ class C45Tree:
             attribute_list.remove(best_attribute)
 
         # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
-        if len(D[0][
-                   best_attribute].unique()) > 5:  # 5 referral sources.... TODO map the discrete and continuous columns
+        if len(self.dataset[best_attribute].unique()) > 5:  # 5 referral sources.... TODO map the discrete and continuous columns D[0]
             # continuous, divide up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
-            N.split_up_down = 'att_val >'
+            N.split_up_down = 'UP'
             l_child = self.grow_tree(N, attribute_list, l_part)  # upper -> att_val > split_val
-            N.split_up_down = 'att_val <='
+            N.split_up_down = 'DOWN'
             r_child = self.grow_tree(N, attribute_list, r_part)  # lower -> att_val <= split_val
-            N.split_up_down = 'att_val >'
-            # self.tree_nodes.append(l_child)
-            # N.children.append(l_child)
-            # self.tree_nodes.append(r_child)
-            # N.children.append(r_child)
+            N.split_up_down = 'UP'
+            #self.tree_nodes.append(l_child)
+            N.children.append(l_child)
+            #self.tree_nodes.append(r_child)
+            N.children.append(r_child)
             N.parent = prev_node
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
-            vals = D[0][best_attribute].unique()
-
-            for v in vals:
+            vals = self.dataset[best_attribute].unique() #D[0][best_attribute].unique()
+            for v in list(vals):
                 data_part = self.partition_data(D, best_attribute, v)
                 if not data_part:
                     # majority class leaf node computed of D
                     L = Node(D[0], D[1], 'leaf')
-                    L.depth = prev_node.depth + 1
+                    L.depth = N.depth + 1
                     L.best_attribute = best_attribute
                     L.split_criterion = v
                     L.predict_leaf_class()  # determine the class of the leaf
@@ -169,13 +178,15 @@ class C45Tree:
                     N.children.append(L)
                     L.parent = N
                 else:
+
                     # recursion
                     N.best_attribute = best_attribute
                     N.split_criterion = v
                     N.parent = prev_node
                     child = self.grow_tree(N, attribute_list, data_part)
-                    # self.tree_nodes.append(child)
-                    # N.children.append(child)
+                    self.tree_nodes.append(child)
+                    prev_node.children.append(child)
+                    N.children.append(child)
 
         self.tree_nodes.append(N)
         prev_node.children.append(N)
@@ -265,14 +276,15 @@ class C45Tree:
         dataset_entropy = self.data_entropy(D[1])
         splitting_criterion = ""
         best_info_gain_ratio = 0.0
+        split_val = ''
 
         for attribute in attribute_list:
             # a_idx = self.attributes.get(attribute) MIGHT NEED THIS
             v = D[0][attribute].unique()  # find v distinct values of attribute
             att_ent = 0.0
             split_info = 0.0
-            split_val = ''
 
+            val_ent = 0.0
             for val in v:
                 data_partition = self.partition_data(D, attribute, val)
                 partition_labels = data_partition[1]
@@ -280,6 +292,10 @@ class C45Tree:
                 p_j = float(len(data_partition[1]) / len(D[1]))
                 att_ent = att_ent + (p_j * part_entropy)
                 split_info = split_info - self.split_info(p_j)
+
+                if part_entropy > val_ent:
+                    val_ent = part_entropy
+                    split_val = v
 
             # Best Attribute checks
             if split_info == 0:  # prevent division by zero for ratio
@@ -294,7 +310,7 @@ class C45Tree:
                 best_info_gain_ratio = info_gain_ratio
                 best_attribute = attribute
 
-        return best_attribute
+        return best_attribute #, split_val
 
     def class_prob(self, feature_label, labels):
         """
@@ -377,10 +393,23 @@ class C45Tree:
         if node.node_type == 'leaf':
             return node.leaf_label
         else:
-            for child in node.children:
-                # check criterion at each node, save the index then call on specific index child
-                # if child.
-                return self.test_tree(test_sample, child)
+            for child in set(node.children):
+                if child.best_attribute is None or child.best_attribute == '':
+                    continue
+
+                else:
+                    if child.split_criterion == test_sample[child.best_attribute]:
+                        return self.test_tree(test_sample, child)
+                    else:
+                        if child.split_up_down == 'UP':
+                        # check if att_val > split_criterion
+                            if pd.to_numeric(test_sample[child.best_attribute]) > float(child.split_criterion):
+                                return self.test_tree(test_sample, child)
+                        elif child.split_up_down == 'DOWN':
+                            if pd.to_numeric(test_sample[child.best_attribute]) <= float(child.split_criterion):
+                                return self.test_tree(test_sample, child)
+
+
 
     def predict(self, test_data):  # TODO Add this functionality from the code in main routine
         # uses test set to predict class labels from the constructed tree
@@ -483,7 +512,7 @@ true_pred = 0
 for j in range(len(testing_x)):
     tester_instance = testing_x.iloc[j]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
 print('test accuracy:', true_pred / len(testing_x))
@@ -501,7 +530,7 @@ true_pred = 0
 for i in range(len(x_500)):
     tester_instance = x_500.iloc[i]
     pred = system_test500.test_tree(tester_instance, system_test.root_node)
-    # print(str(i), 'pred', pred, 'label', y_500.iloc[i])
+    #print(str(i), 'pred', pred, 'label', y_500.iloc[i])
     if pred == y_500.iloc[i]:
         true_pred += 1
 print('train accuracy:',
@@ -515,7 +544,7 @@ print('testing accuracy...')
 true_pred = 0
 for j in range(len(testing_x)):
     tester_instance = testing_x.iloc[j]
-    pred = system_test.test_tree(tester_instance, system_test.root_node)
+    pred = system_test500.test_tree(tester_instance, system_test500.root_node)
     # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == testing_y.iloc[j]:
         true_pred += 1
@@ -531,11 +560,25 @@ print('leaves', leaf_count)
 f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
 f_out.close()
 
-nodes_created = sorted(nodes_created)
+
+nodes_created = sorted(set(nodes_created))
 for n in nodes_created:
     print('Node:')
     n.print_node()
     if n.children:
-        for d in n.children:
+        for d in set(n.children):
             d.print_node()
     print()
+
+
+'''
+full_system = C45Tree(column_names, train_data)
+full_system.train(x_train, y_train)
+for k in range(len(x_train)):
+    tester_instance = x_train.iloc[k]
+    pred = full_system.test_tree(tester_instance, full_system.root_node)
+    # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
+    if pred == y_train.iloc[k]:
+        true_pred += 1
+print('Full set test accuracy:', true_pred / len(x_train))
+'''

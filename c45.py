@@ -410,7 +410,7 @@ y_train = train_data.iloc[:, -1]
 y_train = y_train.replace('negative.', 'negative')
 y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
 y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
-
+print(train_data['referral source'].unique())
 '''
 node_test = Node(x_train, y_train, column_names[:-1], 'root')
 print(node_test.__dict__)

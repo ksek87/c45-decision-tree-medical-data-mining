@@ -130,11 +130,13 @@ class C45Tree:
         N.depth = prev_node.depth + 1
         N.parent = prev_node
         # conduct attribute selection method, label node with the criterion
-        best_attribute = self.attribute_selection_method(D, attribute_list)
+        best_attribute, crit_split_val = self.attribute_selection_method(D, attribute_list)
+
         if prev_node.node_type == 'root':
             print(best_attribute)
 
         N.best_attribute = best_attribute  # label node with best attribute
+        N.split_criterion = crit_split_val
         if best_attribute == '':
             # early stop
             N.best_attribute = str(best_attribute)
@@ -180,15 +182,17 @@ class C45Tree:
                 else:
                     # recursion
                     N_V = Node(D[0], D[1], attribute_list, 'node')
-                    N_V.depth = prev_node.depth + 1
-                    N_V.parent = prev_node
+                    N_V.depth = N.depth
+                    #N_V.parent = N
                     N_V.best_attribute = best_attribute
                     N_V.split_criterion = v
                     N_V.parent = prev_node
                     child = self.grow_tree(N_V, attribute_list, data_part)
                     self.tree_nodes.append(child)
                     #prev_node.children.append(child)
-                    N.children.append(child)
+                    #N.children.append(child)
+                    #prev_node.children.append(N_V)
+                    #N.split_criterion = crit_split_val
 
         self.tree_nodes.append(N)
         prev_node.children.append(N)
@@ -285,7 +289,7 @@ class C45Tree:
             v = D[0][attribute].unique()  # find v distinct values of attribute
             att_ent = 0.0
             split_info = 0.0
-
+            curr_val = ''
             val_ent = 0.0
             for val in v:
                 data_partition = self.partition_data(D, attribute, val)
@@ -297,7 +301,7 @@ class C45Tree:
 
                 if part_entropy > val_ent:
                     val_ent = part_entropy
-                    split_val = v
+                    curr_val = val
 
             # Best Attribute checks
             if split_info == 0:  # prevent division by zero for ratio
@@ -311,8 +315,8 @@ class C45Tree:
             if info_gain_ratio > best_info_gain_ratio:
                 best_info_gain_ratio = info_gain_ratio
                 best_attribute = attribute
-
-        return best_attribute
+                split_val = curr_val
+        return best_attribute, split_val
 
     def class_prob(self, feature_label, labels):
         """
@@ -400,6 +404,7 @@ class C45Tree:
                     continue
 
                 else:
+
                     if child.split_criterion == test_sample[child.best_attribute]:
                         return self.test_tree(test_sample, child)
                     else:
@@ -565,15 +570,13 @@ f_out.close()
 
 nodes_created = sorted(nodes_created)
 for n in nodes_created:
-    print('Node:')
     n.print_node()
-    if n.children:
-        for d in n.children:
-            d.print_node()
+    for d in n.children:
+        d.print_node()
     print()
 
-
 '''
+true_pred = 0
 full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
 for k in range(len(x_train)):
@@ -582,5 +585,5 @@ for k in range(len(x_train)):
     # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == y_train.iloc[k]:
         true_pred += 1
-print('Full set test accuracy:', true_pred / len(x_train))
+print('Full set train accuracy:', true_pred / len(x_train))  # cureently 0.1321 % accuracy
 '''

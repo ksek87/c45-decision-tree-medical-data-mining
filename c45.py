@@ -157,9 +157,9 @@ class C45Tree:
             N.split_up_down = 'DOWN'
             r_child = self.grow_tree(N, attribute_list, r_part)  # lower -> att_val <= split_val
             N.split_up_down = 'UP'
-            #self.tree_nodes.append(l_child)
+            self.tree_nodes.append(l_child)
             N.children.append(l_child)
-            #self.tree_nodes.append(r_child)
+            self.tree_nodes.append(r_child)
             N.children.append(r_child)
             N.parent = prev_node
         else:
@@ -178,14 +178,16 @@ class C45Tree:
                     N.children.append(L)
                     L.parent = N
                 else:
-
                     # recursion
-                    N.best_attribute = best_attribute
-                    N.split_criterion = v
-                    N.parent = prev_node
-                    child = self.grow_tree(N, attribute_list, data_part)
+                    N_V = Node(D[0], D[1], attribute_list, 'node')
+                    N_V.depth = prev_node.depth + 1
+                    N_V.parent = prev_node
+                    N_V.best_attribute = best_attribute
+                    N_V.split_criterion = v
+                    N_V.parent = prev_node
+                    child = self.grow_tree(N_V, attribute_list, data_part)
                     self.tree_nodes.append(child)
-                    prev_node.children.append(child)
+                    #prev_node.children.append(child)
                     N.children.append(child)
 
         self.tree_nodes.append(N)
@@ -310,7 +312,7 @@ class C45Tree:
                 best_info_gain_ratio = info_gain_ratio
                 best_attribute = attribute
 
-        return best_attribute #, split_val
+        return best_attribute
 
     def class_prob(self, feature_label, labels):
         """
@@ -393,7 +395,7 @@ class C45Tree:
         if node.node_type == 'leaf':
             return node.leaf_label
         else:
-            for child in set(node.children):
+            for child in node.children:
                 if child.best_attribute is None or child.best_attribute == '':
                     continue
 
@@ -561,12 +563,12 @@ f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
 f_out.close()
 
 
-nodes_created = sorted(set(nodes_created))
+nodes_created = sorted(nodes_created)
 for n in nodes_created:
     print('Node:')
     n.print_node()
     if n.children:
-        for d in set(n.children):
+        for d in n.children:
             d.print_node()
     print()
 

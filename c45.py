@@ -133,11 +133,8 @@ class C45Tree:
         # conduct attribute selection method, label node with the criterion
         best_attribute, crit_split_val = self.attribute_selection_method(D, attribute_list)
 
-        if prev_node.node_type == 'root':
-            print(best_attribute)
-
         N.best_attribute = best_attribute  # label node with best attribute
-        N.split_criterion = crit_split_val
+        N.split_criterion = crit_split_val # for discrete
         if best_attribute == '':
             # early stop
             N.best_attribute = str(best_attribute)
@@ -210,7 +207,8 @@ class C45Tree:
                     #N.split_criterion = crit_split_val
 
         if dup_N_flag == 0:
-            self.tree_nodes.append(N)
+            if N not in self.tree_nodes:
+                self.tree_nodes.append(N)
             prev_node.children.append(N)
         return N
 

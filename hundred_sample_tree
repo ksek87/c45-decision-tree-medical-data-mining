@@ -1,163 +1,167 @@
-Node:
 best att- None split_crit- None None type- root depth- 0 class label- None
+best att- T4U measured split_crit- None t type- node depth- 1 class label- None
 best att- T4U measured split_crit- None f type- node depth- 1 class label- None
 
-Node:
-best att- T4U measured split_crit- None f type- node depth- 1 class label- None
-best att- on thyroxine split_crit- None t type- node depth- 2 class label- None
+best att- on thyroxine split_crit- None f type- node depth- 2 class label- None
+
 best att- T4U measured split_crit- None f type- leaf depth- 2 class label- negative
 
-Node:
-best att- on thyroxine split_crit- None t type- node depth- 2 class label- None
-best att- referral source split_crit- None SVHD type- node depth- 3 class label- None
-best att- on thyroxine split_crit- None t type- leaf depth- 3 class label- negative
-
-Node:
 best att- T4U measured split_crit- None f type- leaf depth- 2 class label- negative
 
-Node:
-best att- referral source split_crit- None SVHD type- node depth- 3 class label- None
-best att- sex split_crit- None M type- node depth- 4 class label- None
-best att- referral source split_crit- None SVI type- leaf depth- 4 class label- negative
-best att- TSH measured split_crit- None f type- node depth- 4 class label- None
-best att- pregnant split_crit- None f type- node depth- 4 class label- None
-best att- referral source split_crit- None SVHD type- leaf depth- 4 class label- negative
+best att- referral source split_crit- None SVHC type- node depth- 3 class label- None
 
-Node:
 best att- on thyroxine split_crit- None t type- leaf depth- 3 class label- negative
 
-Node:
-best att- sex split_crit- None M type- node depth- 4 class label- None
-best att- TT4 split_crit- None 109 type- node depth- 5 class label- None
-best att- sex split_crit- None M type- leaf depth- 5 class label- negative
+best att- on thyroxine split_crit- None t type- leaf depth- 3 class label- negative
 
-Node:
+best att- sex split_crit- None F type- node depth- 4 class label- None
+
 best att- referral source split_crit- None SVI type- leaf depth- 4 class label- negative
 
-Node:
-best att- TSH measured split_crit- None f type- node depth- 4 class label- None
-best att- I131 treatment split_crit- None t type- node depth- 5 class label- None
-best att- TSH measured split_crit- None f type- leaf depth- 5 class label- negative
+best att- referral source split_crit- None SVI type- leaf depth- 4 class label- negative
 
-Node:
-best att- pregnant split_crit- None f type- node depth- 4 class label- None
-best att- pregnant split_crit- None t type- leaf depth- 5 class label- increased  binding  protein
-best att- pregnant split_crit- None f type- leaf depth- 5 class label- negative
+best att- TSH measured split_crit- None t type- node depth- 4 class label- None
 
-Node:
+best att- pregnant split_crit- None  type- node depth- 4 class label- None
+
 best att- referral source split_crit- None SVHD type- leaf depth- 4 class label- negative
 
-Node:
-best att- TT4 split_crit- None 109 type- node depth- 5 class label- None
-best att- TT4 split_crit- None 85 type- leaf depth- 6 class label- negative
-best att- TT4 split_crit- None 87 type- leaf depth- 6 class label- increased  binding  protein
-best att- TT4 split_crit- None 77 type- leaf depth- 6 class label- negative
-best att- TT4 split_crit- None 109 type- leaf depth- 6 class label- negative
+best att- referral source split_crit- None SVHD type- leaf depth- 4 class label- negative
 
-Node:
+best att- TT4 split_crit- UP 81.0 type- node depth- 5 class label- None
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+best att- age split_crit- DOWN 64.0 type- node depth- 6 class label- None
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+best att- age split_crit- DOWN 64.0 type- node depth- 6 class label- None
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+
+best att- TT4 split_crit- DOWN 81.0 type- node depth- 5 class label- None
+best att- TT4 split_crit- DOWN 81.0 type- leaf depth- 6 class label- negative
+best att- TT4 split_crit- DOWN 81.0 type- leaf depth- 6 class label- negative
+
+best att- TT4 split_crit- UP 81.0 type- node depth- 5 class label- None
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+best att- age split_crit- DOWN 64.0 type- node depth- 6 class label- None
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+best att- age split_crit- DOWN 64.0 type- node depth- 6 class label- None
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+
 best att- sex split_crit- None M type- leaf depth- 5 class label- negative
 
-Node:
-best att- I131 treatment split_crit- None t type- node depth- 5 class label- None
-best att- on antithyroid medication split_crit- None t type- node depth- 6 class label- None
-best att- I131 treatment split_crit- None t type- leaf depth- 6 class label- negative
+best att- sex split_crit- None M type- leaf depth- 5 class label- negative
 
-Node:
+best att- I131 treatment split_crit- None f type- node depth- 5 class label- None
+
 best att- TSH measured split_crit- None f type- leaf depth- 5 class label- negative
 
-Node:
-best att- pregnant split_crit- None t type- leaf depth- 5 class label- increased  binding  protein
+best att- TSH measured split_crit- None f type- leaf depth- 5 class label- negative
 
-Node:
 best att- pregnant split_crit- None f type- leaf depth- 5 class label- negative
 
-Node:
-best att- TT4 split_crit- None 85 type- leaf depth- 6 class label- negative
+best att- pregnant split_crit- None f type- leaf depth- 5 class label- negative
 
-Node:
-best att- TT4 split_crit- None 87 type- leaf depth- 6 class label- increased  binding  protein
+best att- pregnant split_crit- None t type- leaf depth- 5 class label- increased  binding  protein
 
-Node:
-best att- TT4 split_crit- None 77 type- leaf depth- 6 class label- negative
+best att- pregnant split_crit- None t type- leaf depth- 5 class label- increased  binding  protein
 
-Node:
-best att- TT4 split_crit- None 109 type- leaf depth- 6 class label- negative
+best att- age split_crit- UP 64.0 type- node depth- 6 class label- None
+best att- age split_crit- UP 64.0 type- leaf depth- 7 class label- negative
+best att- age split_crit- UP 64.0 type- leaf depth- 7 class label- negative
 
-Node:
-best att- on antithyroid medication split_crit- None t type- node depth- 6 class label- None
-best att- query hyperthyroid split_crit- None t type- node depth- 7 class label- None
-best att- on antithyroid medication split_crit- None t type- leaf depth- 7 class label- negative
+best att- age split_crit- DOWN 64.0 type- node depth- 6 class label- None
+best att- TSH split_crit- UP 6.15 type- node depth- 7 class label- None
+best att- TSH split_crit- DOWN 6.15 type- node depth- 7 class label- None
+best att- TSH split_crit- UP 6.15 type- node depth- 7 class label- None
+best att- TSH split_crit- DOWN 6.15 type- node depth- 7 class label- None
+best att- TSH split_crit- UP 6.15 type- node depth- 7 class label- None
 
-Node:
+best att- TT4 split_crit- DOWN 81.0 type- leaf depth- 6 class label- negative
+
+best att- on antithyroid medication split_crit- None f type- node depth- 6 class label- None
+
 best att- I131 treatment split_crit- None t type- leaf depth- 6 class label- negative
 
-Node:
-best att- query hyperthyroid split_crit- None t type- node depth- 7 class label- None
-best att- TSH split_crit- att_val > 1.2999999999999998 type- node depth- 8 class label- None
-best att- query hyperthyroid split_crit- None t type- leaf depth- 8 class label- negative
+best att- I131 treatment split_crit- None t type- leaf depth- 6 class label- negative
 
-Node:
+best att- age split_crit- UP 64.0 type- leaf depth- 7 class label- negative
+
+best att- TSH split_crit- UP 6.15 type- node depth- 7 class label- None
+best att- TSH split_crit- UP 6.15 type- leaf depth- 8 class label- negative
+best att- TSH split_crit- UP 6.15 type- leaf depth- 8 class label- negative
+
+best att- TSH split_crit- DOWN 6.15 type- node depth- 7 class label- None
+best att- T3 split_crit- UP 2.45 type- node depth- 8 class label- None
+best att- T3 split_crit- DOWN 2.45 type- node depth- 8 class label- None
+best att- T3 split_crit- UP 2.45 type- node depth- 8 class label- None
+best att- T3 split_crit- DOWN 2.45 type- node depth- 8 class label- None
+best att- T3 split_crit- UP 2.45 type- node depth- 8 class label- None
+
+best att- query hyperthyroid split_crit- None f type- node depth- 7 class label- None
+
 best att- on antithyroid medication split_crit- None t type- leaf depth- 7 class label- negative
 
-Node:
-best att- TSH split_crit- att_val > 1.2999999999999998 type- node depth- 8 class label- None
-best att- T3 measured split_crit- None f type- node depth- 9 class label- None
-best att-  split_crit- None None type- node depth- 9 class label- None
+best att- on antithyroid medication split_crit- None t type- leaf depth- 7 class label- negative
 
-Node:
+best att- TSH split_crit- UP 6.15 type- leaf depth- 8 class label- negative
+
+best att- T3 split_crit- UP 2.45 type- node depth- 8 class label- None
+best att- T3 split_crit- UP 2.45 type- leaf depth- 9 class label- increased  binding  protein
+best att- T3 split_crit- UP 2.45 type- leaf depth- 9 class label- increased  binding  protein
+
+best att- T3 split_crit- DOWN 2.45 type- node depth- 8 class label- None
+best att- T3 split_crit- DOWN 2.45 type- leaf depth- 9 class label- negative
+best att- T3 split_crit- DOWN 2.45 type- leaf depth- 9 class label- negative
+
+best att- FTI split_crit- UP 95.5 type- node depth- 8 class label- None
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- DOWN 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- DOWN 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+
+best att- FTI split_crit- DOWN 95.5 type- node depth- 8 class label- None
+best att-  split_crit- None  type- node depth- 9 class label- None
+best att-  split_crit- None  type- node depth- 9 class label- None
+
+best att- FTI split_crit- UP 95.5 type- node depth- 8 class label- None
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- DOWN 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- DOWN 1.135 type- node depth- 9 class label- None
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+
 best att- query hyperthyroid split_crit- None t type- leaf depth- 8 class label- negative
 
-Node:
-best att- T3 measured split_crit- None f type- node depth- 9 class label- None
-best att- T3 split_crit- att_val > 0.75 type- node depth- 10 class label- None
-best att- T3 measured split_crit- None f type- leaf depth- 10 class label- negative
+best att- query hyperthyroid split_crit- None t type- leaf depth- 8 class label- negative
 
-Node:
-best att-  split_crit- None None type- node depth- 9 class label- None
+best att- T3 split_crit- UP 2.45 type- leaf depth- 9 class label- increased  binding  protein
 
-Node:
-best att- T3 split_crit- att_val > 0.75 type- node depth- 10 class label- None
-best att- T4U split_crit- att_val > 1.405 type- node depth- 11 class label- None
-best att- T3 split_crit- att_val <= 0.75 type- leaf depth- 11 class label- negative
+best att- T3 split_crit- DOWN 2.45 type- leaf depth- 9 class label- negative
 
-Node:
-best att- T3 measured split_crit- None f type- leaf depth- 10 class label- negative
+best att- T4U split_crit- UP 1.135 type- node depth- 9 class label- None
+best att- query hypothyroid split_crit- None f type- node depth- 10 class label- None
+best att- query hypothyroid split_crit- None t type- node depth- 10 class label- None
+best att- query hypothyroid split_crit- None f type- node depth- 10 class label- None
 
-Node:
-best att- T4U split_crit- att_val > 1.405 type- node depth- 11 class label- None
-best att- T4U split_crit- att_val > 1.405 type- leaf depth- 12 class label- negative
-best att- age split_crit- att_val > 74.5 type- node depth- 12 class label- None
+best att- T4U split_crit- DOWN 1.135 type- node depth- 9 class label- None
+best att- T3 measured split_crit- None t type- node depth- 10 class label- None
+best att- T3 measured split_crit- None f type- node depth- 10 class label- None
+best att- T3 measured split_crit- None t type- node depth- 10 class label- None
 
-Node:
-best att- T3 split_crit- att_val <= 0.75 type- leaf depth- 11 class label- negative
+best att-  split_crit- None  type- node depth- 9 class label- None
 
-Node:
-best att- T4U split_crit- att_val > 1.405 type- leaf depth- 12 class label- negative
+best att-  split_crit- None  type- node depth- 11 class label- None
 
-Node:
-best att- age split_crit- att_val > 74.5 type- node depth- 12 class label- None
-best att- age split_crit- att_val > 74.5 type- leaf depth- 13 class label- negative
-best att- FTI split_crit- att_val > 132.5 type- node depth- 13 class label- None
+best att-  split_crit- None  type- node depth- 11 class label- None
 
-Node:
-best att- age split_crit- att_val > 74.5 type- leaf depth- 13 class label- negative
+best att- query hypothyroid split_crit- None t type- leaf depth- 11 class label- increased  binding  protein
 
-Node:
-best att- FTI split_crit- att_val > 132.5 type- node depth- 13 class label- None
-best att- FTI split_crit- att_val > 132.5 type- leaf depth- 14 class label- negative
-best att- query hypothyroid split_crit- None f type- node depth- 14 class label- None
+best att- query hypothyroid split_crit- None t type- leaf depth- 11 class label- increased  binding  protein
 
-Node:
-best att- FTI split_crit- att_val > 132.5 type- leaf depth- 14 class label- negative
+best att-  split_crit- None  type- node depth- 11 class label- None
 
-Node:
-best att- query hypothyroid split_crit- None f type- node depth- 14 class label- None
-best att- query hypothyroid split_crit- None t type- leaf depth- 15 class label- negative
-best att-  split_crit- None None type- node depth- 15 class label- None
+best att-  split_crit- None  type- node depth- 11 class label- None
 
-Node:
-best att- query hypothyroid split_crit- None t type- leaf depth- 15 class label- negative
+best att- T3 measured split_crit- None f type- leaf depth- 11 class label- negative
 
-Node:
-best att-  split_crit- None None type- node depth- 15 class label- None
-
+best att- T3 measured split_crit- None f type- leaf depth- 11 class label- negative

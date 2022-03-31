@@ -94,10 +94,11 @@ class C45Tree:
         :param prev_node:
         :return: N, the new node
         """
-        if (prev_node is not None and prev_node.parent is not None):
+        if prev_node is not None and prev_node.parent is not None:
             if prev_node not in prev_node.parent.children:
                 prev_node.parent.children.append(prev_node)
 
+        dup_N_flag = 0
         # check for termination cases
         # check if all tuples in D are in the same class
         if self.check_same_class_labels(D[1]):
@@ -156,14 +157,26 @@ class C45Tree:
             N.split_criterion = split_val
             N.split_up_down = 'UP'
             l_child = self.grow_tree(N, attribute_list, l_part)  # upper -> att_val > split_val
-            N.split_up_down = 'DOWN'
-            r_child = self.grow_tree(N, attribute_list, r_part)  # lower -> att_val <= split_val
-            N.split_up_down = 'UP'
-            self.tree_nodes.append(l_child)
+            N_V = Node(D[0], D[1], attribute_list, 'node')
+            N_V.depth = N.depth
+            # N_V.parent = N
+            N_V.best_attribute = best_attribute
+            N_V.split_criterion = split_val
+            N_V.parent = prev_node
+            #N_V.parent.children.append(N_V)
+            N_V.split_up_down = 'DOWN'
+            r_child = self.grow_tree(N_V, attribute_list, r_part)  # lower -> att_val <= split_val
+            #N.split_up_down = 'UP'
+            #self.tree_nodes.append(l_child)
             N.children.append(l_child)
-            self.tree_nodes.append(r_child)
-            N.children.append(r_child)
+            #self.tree_nodes.append(r_child)
+            N_V.children.append(r_child)
             N.parent = prev_node
+            self.tree_nodes.append(N)
+            self.tree_nodes.append(N_V)
+            prev_node.children.append(N)
+            prev_node.children.append(N_V)
+            return N
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
             vals = self.dataset[best_attribute].unique() #D[0][best_attribute].unique()
@@ -187,15 +200,18 @@ class C45Tree:
                     N_V.best_attribute = best_attribute
                     N_V.split_criterion = v
                     N_V.parent = prev_node
+                    N_V.parent.children.append(N_V)
                     child = self.grow_tree(N_V, attribute_list, data_part)
                     self.tree_nodes.append(child)
+                    dup_N_flag = 1
                     #prev_node.children.append(child)
                     #N.children.append(child)
                     #prev_node.children.append(N_V)
                     #N.split_criterion = crit_split_val
 
-        self.tree_nodes.append(N)
-        prev_node.children.append(N)
+        if dup_N_flag == 0:
+            self.tree_nodes.append(N)
+            prev_node.children.append(N)
         return N
 
     def continuous_attribute_data_partition(self, D, attribute):
@@ -565,7 +581,7 @@ for n in system_test500.tree_nodes:
 print('leaves', leaf_count)
 
 f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
-f_out.close()
+
 
 
 nodes_created = sorted(nodes_created)
@@ -575,7 +591,7 @@ for n in nodes_created:
         d.print_node()
     print()
 
-'''
+
 true_pred = 0
 full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
@@ -585,5 +601,8 @@ for k in range(len(x_train)):
     # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == y_train.iloc[k]:
         true_pred += 1
-print('Full set train accuracy:', true_pred / len(x_train))  # cureently 0.1321 % accuracy
-'''
+print('Full set train accuracy:', true_pred / len(x_train))  # cureently 0.1321 % accuracy IMPROVED TO 17.9%
+f_out.write('\nFull set train accuracy:'+ str(true_pred / len(x_train)))
+f_out.write("\tFull set test accuracy:")
+
+f_out.close()

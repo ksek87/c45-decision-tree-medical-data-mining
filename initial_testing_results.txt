@@ -1,7 +1,8 @@
 First Test: 100 Samples training, 24 Test Samples
-Number of Nodes for 100 sample tree:76
-Training Accuracy:0.72	Test Accuracy:0.5833333333333334
+Number of Nodes for 100 sample tree:59
+Training Accuracy:0.82	Test Accuracy:0.6666666666666666
 
 First Test: 500 Samples training, 124 Test Samples
-Number of nodes:108
-Train Accuracy:0.662	 Test Accuracy0.20161290322580644
+Number of nodes:83
+Train Accuracy:0.744	 Test Accuracy0.2903225806451613
+Full set train accuracy:0.17892857142857144	Full set test accuracy:

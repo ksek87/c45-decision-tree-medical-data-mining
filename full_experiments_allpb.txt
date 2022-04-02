@@ -1,0 +1,7 @@
+FULL EXPERIMENTATION WITH ALLPB DATASET
+Experiment #1 - random state = 24 
+Train Accuracy:0.9532142857142857	Test Accuracy:0.9691358024691358
+Experiment #2 - random state = 55 
+Train Accuracy:0.9528571428571428	Test Accuracy:0.9691358024691358
+Experiment #3 - random state = 75 
+Train Accuracy:0.9535714285714286	Test Accuracy:0.9691358024691358

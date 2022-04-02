@@ -524,13 +524,12 @@ f_out.write('Number of Nodes for 100 sample tree:' + str(len(system_test.tree_no
 nodes_created = system_test.tree_nodes
 
 leaf_count = 0
-for n in set(nodes_created):
+for n in nodes_created:
     # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
 print('leaves', leaf_count)
 print(len(system_test.tree_nodes))
-print(len(set(nodes_created)))
 f_out.write('Number of leaves:' + str(leaf_count) + '\n')
 # tester_instance = x_train.iloc[0]
 # pred = system_test.test_tree(tester_instance, system_test.root_node)
@@ -577,7 +576,7 @@ full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
 print(len(full_system.tree_nodes))
 leaf_count = 0
-for n in set(full_system.tree_nodes):
+for n in full_system.tree_nodes:
     # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
@@ -594,3 +593,89 @@ f_out.close()
 
 print()
 full_system.print_tree()
+
+print('FURTHER FULL ALLPB DATASET EXPERIMENTS')
+res_out = open('full_experiments_allpb.txt', 'w')
+res_out.write('FULL EXPERIMENTATION WITH ALLPB DATASET\n')
+res_out.write('Experiment #1 - random state = 24 \n')
+
+np.random.seed(24)  # replicate results using random seed
+train_data = sklearn.utils.shuffle(train_data, random_state=24)
+test_data = sklearn.utils.shuffle(test_data, random_state=24)
+x_train = train_data.iloc[:, :-1]
+y_train = train_data.iloc[:, -1]
+x_test = test_data.iloc[:, :-1]
+y_test = test_data.iloc[:, -1]
+
+y_train = y_train.replace('negative.', 'negative')
+y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
+y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
+y_test = y_test.replace('negative.', 'negative')
+y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
+y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
+
+exp1C45 = C45Tree(column_names, train_data)
+exp1C45.train(x_train, y_train)
+true_pred, preds = exp1C45.predict(x_train,y_train)
+print('Full set train accuracy:', true_pred / len(x_train))
+res_out.write('Train Accuracy:'+str(true_pred / len(x_train)))
+true_pred, preds = exp1C45.predict(x_test,y_test)
+print('Full set test accuracy:', true_pred / len(x_test))
+res_out.write('\tTest Accuracy:'+str(true_pred / len(x_test)))
+
+
+res_out.write('\nExperiment #2 - random state = 55 \n')
+np.random.seed(55)  # replicate results using random seed
+train_data = sklearn.utils.shuffle(train_data, random_state=55)
+test_data = sklearn.utils.shuffle(test_data, random_state=55)
+
+x_train = train_data.iloc[:, :-1]
+y_train = train_data.iloc[:, -1]
+x_test = test_data.iloc[:, :-1]
+y_test = test_data.iloc[:, -1]
+
+y_train = y_train.replace('negative.', 'negative')
+y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
+y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
+y_test = y_test.replace('negative.', 'negative')
+y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
+y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
+
+
+exp2C45 = C45Tree(column_names, train_data)
+exp2C45.train(x_train, y_train)
+true_pred, preds = exp2C45.predict(x_train,y_train)
+print('Full set train accuracy:', true_pred / len(x_train))
+res_out.write('Train Accuracy:'+str(true_pred / len(x_train)))
+true_pred, preds = exp2C45.predict(x_test,y_test)
+print('Full set test accuracy:', true_pred / len(x_test))
+res_out.write('\tTest Accuracy:'+str(true_pred / len(x_test)))
+
+
+res_out.write('\nExperiment #3 - random state = 75 \n')
+np.random.seed(75)  # replicate results using random seed
+train_data = sklearn.utils.shuffle(train_data, random_state=75)
+test_data = sklearn.utils.shuffle(test_data, random_state=75)
+
+x_train = train_data.iloc[:, :-1]
+y_train = train_data.iloc[:, -1]
+x_test = test_data.iloc[:, :-1]
+y_test = test_data.iloc[:, -1]
+
+y_train = y_train.replace('negative.', 'negative')
+y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
+y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
+y_test = y_test.replace('negative.', 'negative')
+y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
+y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
+
+
+exp3C45 = C45Tree(column_names, train_data)
+exp3C45.train(x_train, y_train)
+true_pred, preds = exp3C45.predict(x_train,y_train)
+print('Full set train accuracy:', true_pred / len(x_train))
+res_out.write('Train Accuracy:'+str(true_pred / len(x_train)))
+true_pred, preds = exp3C45.predict(x_test,y_test)
+print('Full set test accuracy:', true_pred / len(x_test))
+res_out.write('\tTest Accuracy:'+str(true_pred / len(x_test)))
+res_out.close()

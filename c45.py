@@ -134,7 +134,7 @@ class C45Tree:
         best_attribute, crit_split_val = self.attribute_selection_method(D, attribute_list)
 
         N.best_attribute = best_attribute  # label node with best attribute
-        N.split_criterion = crit_split_val # for discrete
+        N.split_criterion = crit_split_val  # for discrete
         if best_attribute == '':
             # early stop
             N.best_attribute = str(best_attribute)
@@ -151,8 +151,9 @@ class C45Tree:
         if best_attribute in attribute_list:
             attribute_list.remove(best_attribute)
 
-        # check if attribute is discrete , TODO CHANGE THIS AFTER PREPROCESSING, DIFFERENT DATASET
-        if len(self.dataset[best_attribute].unique()) > 5:  # 5 referral sources.... TODO map the discrete and continuous columns D[0]
+        # check if attribute is discrete NOTE THIS LINE NEEDS TO BE MODIFIED FOR DIFFERENT DATASET
+        if len(self.dataset[
+                   best_attribute].unique()) > 5:  # max 5 discrete categories in attributes from Thyroid set
             # continuous, divide up data at mid point of the values ai + ai1/2
             l_part, r_part, split_val = self.continuous_attribute_data_partition(D, best_attribute)
             N.split_criterion = split_val
@@ -160,17 +161,12 @@ class C45Tree:
             l_child = self.grow_tree(N, attribute_list, l_part)  # upper -> att_val > split_val
             N_V = Node(D[0], D[1], attribute_list, 'node')
             N_V.depth = N.depth
-            # N_V.parent = N
             N_V.best_attribute = best_attribute
             N_V.split_criterion = split_val
             N_V.parent = prev_node
-            #N_V.parent.children.append(N_V)
             N_V.split_up_down = 'DOWN'
             r_child = self.grow_tree(N_V, attribute_list, r_part)  # lower -> att_val <= split_val
-            #N.split_up_down = 'UP'
-            #self.tree_nodes.append(l_child)
             N.children.append(l_child)
-            #self.tree_nodes.append(r_child)
             N_V.children.append(r_child)
             N.parent = prev_node
             self.tree_nodes.append(N)
@@ -180,11 +176,11 @@ class C45Tree:
             return N
         else:
             # discrete, partition based on unique values of attribute to create nodes for recursion
-            vals = self.dataset[best_attribute].unique() #D[0][best_attribute].unique()
+            vals = self.dataset[best_attribute].unique()  # D[0][best_attribute].unique()
             for v in list(vals):
                 data_part = self.partition_data(D, best_attribute, v)
 
-                if not data_part: # TOGGLED TO EMPTY CAUSES 2 LEAVES ONLY TO BE MADE ** check this
+                if not data_part:  # TOGGLED TO EMPTY CAUSES 2 LEAVES ONLY TO BE MADE ** check this
                     # majority class leaf node computed of D
                     L = Node(D[0], D[1], attribute_list, 'leaf')
                     L.depth = N.depth + 1
@@ -198,18 +194,17 @@ class C45Tree:
                     # recursion
                     N_V = Node(D[0], D[1], attribute_list, 'node')
                     N_V.depth = N.depth
-                    #N_V.parent = N
                     N_V.best_attribute = best_attribute
                     N_V.split_criterion = v
                     N_V.parent = prev_node
                     N_V.parent.children.append(N_V)
                     child = self.grow_tree(N_V, attribute_list, data_part)
-                    #self.tree_nodes.append(child)
+                    # self.tree_nodes.append(child)
                     dup_N_flag = 1
-                    #prev_node.children.append(child)
-                    #N.children.append(child)
-                    #prev_node.children.append(N_V)
-                    #N.split_criterion = crit_split_val
+                    # prev_node.children.append(child)
+                    # N.children.append(child)
+                    # prev_node.children.append(N_V)
+                    # N.split_criterion = crit_split_val
 
         if dup_N_flag == 0:
             if N not in self.tree_nodes:
@@ -430,7 +425,7 @@ class C45Tree:
                         return self.test_tree(test_sample, child)
                     else:
                         if child.split_up_down == 'UP':
-                        # check if att_val > split_criterion
+                            # check if att_val > split_criterion
                             if pd.to_numeric(test_sample[child.best_attribute]) > float(child.split_criterion):
                                 return self.test_tree(test_sample, child)
                             else:
@@ -440,8 +435,6 @@ class C45Tree:
                                 return self.test_tree(test_sample, child)
                             else:
                                 pass
-
-
 
     def predict(self, test_data):  # TODO Add this functionality from the code in main routine
         # uses test set to predict class labels from the constructed tree
@@ -531,7 +524,7 @@ true_pred = 0
 for i in range(len(x)):
     tester_instance = x.iloc[i]
     pred = system_test.test_tree(tester_instance, system_test.root_node)
-    # print(str(i), 'pred', pred, 'label', y.iloc[i])
+    print(str(i), 'pred', pred, 'label', y.iloc[i])
     if pred == y.iloc[i]:
         true_pred += 1
 print('train accuracy:', true_pred / len(x))  # RANDOM SEED 24, train accuracy 0.95% with 100 samples
@@ -562,7 +555,7 @@ true_pred = 0
 for i in range(len(x_500)):
     tester_instance = x_500.iloc[i]
     pred = system_test500.test_tree(tester_instance, system_test.root_node)
-    #print(str(i), 'pred', pred, 'label', y_500.iloc[i])
+    print(str(i), 'pred', pred, 'label', y_500.iloc[i])
     if pred == y_500.iloc[i]:
         true_pred += 1
 print('train accuracy:',
@@ -591,8 +584,6 @@ print('leaves', leaf_count)
 
 f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
 
-
-
 nodes_created = sorted(nodes_created)
 for n in nodes_created:
     n.print_node()
@@ -613,8 +604,8 @@ for k in range(len(x_train)):
     # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
     if pred == y_train.iloc[k]:
         true_pred += 1
-print('Full set train accuracy:', true_pred / len(x_train))  # cureently 0.1321 % accuracy IMPROVED TO 17.9%
-f_out.write('\nFull set train accuracy:'+ str(true_pred / len(x_train)))
+print('Full set train accuracy:', true_pred / len(x_train))
+f_out.write('\nFull set train accuracy:' + str(true_pred / len(x_train)))
 f_out.write("\tFull set test accuracy:")
 
 f_out.close()

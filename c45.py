@@ -4,6 +4,9 @@
     Author: Keelin Sekerka-Bajbus B00739421
 
     Program Description:
+        This program implements Quinlan's C4.5 decision tree from scratch, and conducts experiments using the UCI
+        ML repo Thyroid disease dataset for binding proteins (allbp). Specifically, this program uses two classes,
+        Node and C45Tree to construct the decision tree using the Information gain ratio from information theory.
 
     Data Source:
     - UCI Machine Learning Repository, Thyroid Disease Data Set https://archive.ics.uci.edu/ml/datasets/thyroid+disease

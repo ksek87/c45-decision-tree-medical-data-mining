@@ -551,6 +551,7 @@ system_test500 = C45Tree(column_names, train_data)
 system_test500.train(x_500, y_500)
 print('system500 nodes:', len(system_test500.tree_nodes))
 
+leaf_count = 0
 for n in system_test500.tree_nodes:
     # print(n.print_node())
     if n.node_type == 'leaf':
@@ -566,7 +567,7 @@ print('train accuracy:', true_pred / len(x_500))
 f_out.write('Train Accuracy:' + str(true_pred / len(x_500)))
 true_pred, preds = system_test500.predict(testing_x,testing_y)
 print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes
-f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
+f_out.write('\t Test Accuracy:' + str(true_pred / len(testing_x)))
 leaf_count = 0
 
 print('FULL SET')
@@ -576,13 +577,13 @@ full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
 print(len(full_system.tree_nodes))
 leaf_count = 0
-for n in full_system.tree_nodes:
-    # print(n.print_node())
+for n in set(sorted(full_system.tree_nodes)):
+    #print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
 
 f_out.write('Number of nodes:' + str(len(full_system.tree_nodes)) + '\n')
-f_out.write('Number of leaves' + str(leaf_count))
+f_out.write('Number of leaves:' + str(leaf_count))
 true_pred, preds = full_system.predict(x_train,y_train)
 print('Full set train accuracy:', true_pred / len(x_train))
 f_out.write('\nFull set train accuracy:' + str(true_pred / len(x_train)))

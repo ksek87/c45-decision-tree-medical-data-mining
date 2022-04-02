@@ -509,6 +509,13 @@ y_test = y_test.replace('negative.', 'negative')
 y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
 y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
 
+# check class distribution
+print(y_train.value_counts())
+print(y_test.value_counts())
+
+
+
+
 # 100 sample decision tree
 system_test = C45Tree(column_names, train_data)
 
@@ -537,7 +544,7 @@ f_out.write('Number of leaves:' + str(leaf_count) + '\n')
 # tester_instance = x_train.iloc[0]
 # pred = system_test.test_tree(tester_instance, system_test.root_node)
 
-true_pred, preds = system_test.predict(x,y)
+true_pred, preds = system_test.predict(x, y)
 print('train accuracy:', true_pred / len(x))
 f_out.write('Training Accuracy:' + str(true_pred / len(x)))
 true_pred, preds = system_test.predict(testing_x, testing_y)
@@ -561,14 +568,12 @@ for n in system_test500.tree_nodes:
         leaf_count += 1
 print('leaves', leaf_count)
 
-
-
 f_out.write('Number of nodes:' + str(len(system_test500.tree_nodes)) + '\n')
 f_out.write('\t Number of leaves:' + str(leaf_count) + '\n')
-true_pred, preds = system_test500.predict(x_500,y_500)
+true_pred, preds = system_test500.predict(x_500, y_500)
 print('train accuracy:', true_pred / len(x_500))
 f_out.write('Train Accuracy:' + str(true_pred / len(x_500)))
-true_pred, preds = system_test500.predict(testing_x,testing_y)
+true_pred, preds = system_test500.predict(testing_x, testing_y)
 print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes
 f_out.write('\t Test Accuracy:' + str(true_pred / len(testing_x)))
 leaf_count = 0
@@ -581,17 +586,17 @@ full_system.train(x_train, y_train)
 print(len(full_system.tree_nodes))
 leaf_count = 0
 for n in set(sorted(full_system.tree_nodes)):
-    #print(n.print_node())
+    # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
 
 f_out.write('Number of nodes:' + str(len(full_system.tree_nodes)) + '\n')
 f_out.write('Number of leaves:' + str(leaf_count))
-true_pred, preds = full_system.predict(x_train,y_train)
+true_pred, preds = full_system.predict(x_train, y_train)
 print('Full set train accuracy:', true_pred / len(x_train))
 f_out.write('\nFull set train accuracy:' + str(true_pred / len(x_train)))
-true_pred, preds = full_system.predict(x_test,y_test)
-f_out.write("\tFull set test accuracy:"+ str(true_pred / len(x_test)))
+true_pred, preds = full_system.predict(x_test, y_test)
+f_out.write("\tFull set test accuracy:" + str(true_pred / len(x_test)))
 
 f_out.close()
 
@@ -620,13 +625,12 @@ y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  pro
 
 exp1C45 = C45Tree(column_names, train_data)
 exp1C45.train(x_train, y_train)
-true_pred, preds = exp1C45.predict(x_train,y_train)
+true_pred, preds = exp1C45.predict(x_train, y_train)
 print('Full set train accuracy:', true_pred / len(x_train))
-res_out.write('Train Accuracy:'+str(true_pred / len(x_train)))
-true_pred, preds = exp1C45.predict(x_test,y_test)
+res_out.write('Train Accuracy:' + str(true_pred / len(x_train)))
+true_pred, preds = exp1C45.predict(x_test, y_test)
 print('Full set test accuracy:', true_pred / len(x_test))
-res_out.write('\tTest Accuracy:'+str(true_pred / len(x_test)))
-
+res_out.write('\tTest Accuracy:' + str(true_pred / len(x_test)))
 
 res_out.write('\nExperiment #2 - random state = 55 \n')
 np.random.seed(55)  # replicate results using random seed
@@ -645,16 +649,14 @@ y_test = y_test.replace('negative.', 'negative')
 y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
 y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
 
-
 exp2C45 = C45Tree(column_names, train_data)
 exp2C45.train(x_train, y_train)
-true_pred, preds = exp2C45.predict(x_train,y_train)
+true_pred, preds = exp2C45.predict(x_train, y_train)
 print('Full set train accuracy:', true_pred / len(x_train))
-res_out.write('Train Accuracy:'+str(true_pred / len(x_train)))
-true_pred, preds = exp2C45.predict(x_test,y_test)
+res_out.write('Train Accuracy:' + str(true_pred / len(x_train)))
+true_pred, preds = exp2C45.predict(x_test, y_test)
 print('Full set test accuracy:', true_pred / len(x_test))
-res_out.write('\tTest Accuracy:'+str(true_pred / len(x_test)))
-
+res_out.write('\tTest Accuracy:' + str(true_pred / len(x_test)))
 
 res_out.write('\nExperiment #3 - random state = 75 \n')
 np.random.seed(75)  # replicate results using random seed
@@ -673,13 +675,12 @@ y_test = y_test.replace('negative.', 'negative')
 y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
 y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
 
-
 exp3C45 = C45Tree(column_names, train_data)
 exp3C45.train(x_train, y_train)
-true_pred, preds = exp3C45.predict(x_train,y_train)
+true_pred, preds = exp3C45.predict(x_train, y_train)
 print('Full set train accuracy:', true_pred / len(x_train))
-res_out.write('Train Accuracy:'+str(true_pred / len(x_train)))
-true_pred, preds = exp3C45.predict(x_test,y_test)
+res_out.write('Train Accuracy:' + str(true_pred / len(x_train)))
+true_pred, preds = exp3C45.predict(x_test, y_test)
 print('Full set test accuracy:', true_pred / len(x_test))
-res_out.write('\tTest Accuracy:'+str(true_pred / len(x_test)))
+res_out.write('\tTest Accuracy:' + str(true_pred / len(x_test)))
 res_out.close()

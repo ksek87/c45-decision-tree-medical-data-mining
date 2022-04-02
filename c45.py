@@ -436,12 +436,27 @@ class C45Tree:
                             else:
                                 pass
 
-    def predict(self, test_data):  # TODO Add this functionality from the code in main routine
+    def predict(self, test_x, test_y):  # TODO Add this functionality from the code in main routine
         # uses test set to predict class labels from the constructed tree
-        return
+        preds = []
+        true_pred = 0
+        for i in range(len(test_x)):
+            tester_instance = test_x.iloc[i]
+            pred = self.test_tree(tester_instance, self.root_node)
+            # print(str(i), 'pred', pred, 'label', y.iloc[i])
+            if pred == test_y.iloc[i]:
+                true_pred += 1
+            preds.append(pred)
+
+        return true_pred, preds
 
     def print_tree(self):
-        # figure out how to enumerate root, to children nodes
+        nodes_created = sorted(self.tree_nodes)
+        for n in nodes_created:
+            n.print_node()
+            for d in n.children:
+                d.print_node()
+            print()
         return
 
 
@@ -450,6 +465,8 @@ class C45Tree:
 # declare tree, initialize root node / start training and growing the tree
 # print the tree and stats
 # conduct testing with test set for predictions, analyze results (accuracy, recall, etc)
+
+# DATA LOADING AND PRE-PROCESSING TEST AND TRAINING DATA
 column_names = ['age', 'sex', 'on thyroxine', 'query on thyroxine', 'on antithyroid medication', 'sick', 'pregnant',
                 'thyroid surgery', 'I131 treatment', 'query hypothyroid', 'query hyperthyroid', 'lithium', 'goitre',
                 'tumor', 'hypopituitary', 'psych', 'TSH measured', 'TSH', 'T3 measured', 'T3', 'TT4 measured', 'TT4',
@@ -458,50 +475,48 @@ column_names = ['age', 'sex', 'on thyroxine', 'query on thyroxine', 'on antithyr
 
 train_data = pd.read_csv('allbp_data.csv',
                          sep=' ,', names=column_names, encoding='utf-8', engine='python')
+test_data = pd.read_csv('allbp_test.csv',
+                        sep=' ,', names=column_names, encoding='utf-8', engine='python')
 
 train_data[['index_dup', 'age']] = train_data['age'].str.split(',', n=1, expand=True)
 train_data = train_data.drop('index_dup', 1)
-
 train_data = train_data.replace('?', pd.NA)
 # replace ? with most common value
 train_data = train_data.fillna(train_data.mode().iloc[0])  # [3]
 
+test_data[['index_dup', 'age']] = test_data['age'].str.split(',', n=1, expand=True)
+test_data = test_data.drop('index_dup', 1)
+test_data = test_data.replace('?', pd.NA)
+# replace ? with most common value
+test_data = test_data.fillna(train_data.mode().iloc[0])  # [3]
+
 np.random.seed(42)  # replicate results using random seed
 train_data = sklearn.utils.shuffle(train_data)
+test_data = sklearn.utils.shuffle(test_data)
 
 x_train = train_data.iloc[:, :-1]
 y_train = train_data.iloc[:, -1]
+x_test = test_data.iloc[:, :-1]
+y_test = test_data.iloc[:, -1]
+
 y_train = y_train.replace('negative.', 'negative')
 y_train = y_train.replace('increased  binding  protein.', 'increased  binding  protein')
 y_train = y_train.replace('decreased  binding  protein.', 'decreased  binding  protein')
-print(train_data['referral source'].unique())
-'''
-node_test = Node(x_train, y_train, column_names[:-1], 'root')
-print(node_test.__dict__)
-print()
-'''
-system_test = C45Tree(column_names, train_data)
-print(system_test.__dict__)
-'''
-print(system_test.check_same_class_labels(y_train))  # good
-# feature attribute testing methods
-# p_i calculation
-print(set(y_train.values))
-count_of_val = len(y_train[y_train == 'negative'])
-print(count_of_val, 'expected prob', count_of_val / len(y_train))
-p_i = system_test.class_prob('negative', y_train)
-print(p_i)
+y_test = y_test.replace('negative.', 'negative')
+y_test = y_test.replace('increased  binding  protein.', 'increased  binding  protein')
+y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  protein')
 
-# entropy (info gain) calcs
-entr = system_test.data_entropy(y_train)
-print('data entropy', entr)
-'''
+# 100 sample decision tree
+system_test = C45Tree(column_names, train_data)
+
 f_out = open('initial_testing_results.txt', 'w')
 
 # small sample of data
 f_out.write('First Test: 100 Samples training, 24 Test Samples\n')
 x = x_train[:100]
 y = y_train[:100]
+testing_x = x_train[101:125]
+testing_y = y_train[101:125]
 
 print('system_test:')
 system_test.train(x, y)
@@ -516,96 +531,66 @@ for n in set(nodes_created):
 print('leaves', leaf_count)
 print(len(system_test.tree_nodes))
 print(len(set(nodes_created)))
-
+f_out.write('Number of leaves:' + str(leaf_count) + '\n')
 # tester_instance = x_train.iloc[0]
 # pred = system_test.test_tree(tester_instance, system_test.root_node)
 
-true_pred = 0
-for i in range(len(x)):
-    tester_instance = x.iloc[i]
-    pred = system_test.test_tree(tester_instance, system_test.root_node)
-    print(str(i), 'pred', pred, 'label', y.iloc[i])
-    if pred == y.iloc[i]:
-        true_pred += 1
-print('train accuracy:', true_pred / len(x))  # RANDOM SEED 24, train accuracy 0.95% with 100 samples
+true_pred, preds = system_test.predict(x,y)
+print('train accuracy:', true_pred / len(x))
 f_out.write('Training Accuracy:' + str(true_pred / len(x)))
-testing_x = x_train[101:125]
-testing_y = y_train[101:125]
-
-print('testing accuracy....')
-true_pred = 0
-for j in range(len(testing_x)):
-    tester_instance = testing_x.iloc[j]
-    pred = system_test.test_tree(tester_instance, system_test.root_node)
-    print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
-    if pred == testing_y.iloc[j]:
-        true_pred += 1
+true_pred, preds = system_test.predict(testing_x, testing_y)
 print('test accuracy:', true_pred / len(testing_x))
 f_out.write('\tTest Accuracy:' + str(true_pred / len(testing_x)) + '\n')
+
 f_out.write('\nFirst Test: 500 Samples training, 124 Test Samples\n')
 print('500 sample tests:')
 x_500 = x_train[:500]
 y_500 = y_train[:500]
-system_test500 = C45Tree(column_names, train_data)
-system_test500.train(x_500, y_500)
-print('system500 nodes:', len(system_test500.tree_nodes), len(set(system_test500.tree_nodes)))
-f_out.write('Number of nodes:' + str(len(system_test500.tree_nodes)) + '\n')
-print('validating using the training data....')
-true_pred = 0
-for i in range(len(x_500)):
-    tester_instance = x_500.iloc[i]
-    pred = system_test500.test_tree(tester_instance, system_test.root_node)
-    print(str(i), 'pred', pred, 'label', y_500.iloc[i])
-    if pred == y_500.iloc[i]:
-        true_pred += 1
-print('train accuracy:',
-      true_pred / len(x_500))  # RANDOM SEED 42, train accuracy 0.956% with 100 samples test acc 0.9583, 41 nodes
-
-f_out.write('Train Accuracy:' + str(true_pred / len(x_500)))
 testing_x = x_train[501:625]
 testing_y = y_train[501:625]
+system_test500 = C45Tree(column_names, train_data)
+system_test500.train(x_500, y_500)
+print('system500 nodes:', len(system_test500.tree_nodes))
 
-print('testing accuracy...')
-true_pred = 0
-for j in range(len(testing_x)):
-    tester_instance = testing_x.iloc[j]
-    pred = system_test500.test_tree(tester_instance, system_test500.root_node)
-    # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
-    if pred == testing_y.iloc[j]:
-        true_pred += 1
-print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes
-
-leaf_count = 0
 for n in system_test500.tree_nodes:
     # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
 print('leaves', leaf_count)
 
+
+
+f_out.write('Number of nodes:' + str(len(system_test500.tree_nodes)) + '\n')
+f_out.write('\t Number of leaves:' + str(leaf_count) + '\n')
+true_pred, preds = system_test500.predict(x_500,y_500)
+print('train accuracy:', true_pred / len(x_500))
+f_out.write('Train Accuracy:' + str(true_pred / len(x_500)))
+true_pred, preds = system_test500.predict(testing_x,testing_y)
+print('test accuracy:', true_pred / len(testing_x))  # RANDOM SEED 42, train acc=0.956 , test acc= 0.9677 55 nodes
 f_out.write('\t Test Accuracy' + str(true_pred / len(testing_x)))
-
-nodes_created = sorted(nodes_created)
-for n in nodes_created:
-    n.print_node()
-    for d in n.children:
-        d.print_node()
-    print()
-
-print()
+leaf_count = 0
 
 print('FULL SET')
+f_out.write('\nFull Training Data Decision Tree (2800 samples)\n')
 true_pred = 0
 full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
 print(len(full_system.tree_nodes))
-for k in range(len(x_train)):
-    tester_instance = x_train.iloc[k]
-    pred = full_system.test_tree(tester_instance, full_system.root_node)
-    # print(str(j), 'pred', pred, 'label', testing_y.iloc[j])
-    if pred == y_train.iloc[k]:
-        true_pred += 1
+leaf_count = 0
+for n in set(full_system.tree_nodes):
+    # print(n.print_node())
+    if n.node_type == 'leaf':
+        leaf_count += 1
+
+f_out.write('Number of nodes:' + str(len(full_system.tree_nodes)) + '\n')
+f_out.write('Number of leaves' + str(leaf_count))
+true_pred, preds = full_system.predict(x_train,y_train)
 print('Full set train accuracy:', true_pred / len(x_train))
 f_out.write('\nFull set train accuracy:' + str(true_pred / len(x_train)))
-f_out.write("\tFull set test accuracy:")
+true_pred, preds = full_system.predict(x_test,y_test)
+f_out.write("\tFull set test accuracy:"+ str(true_pred / len(x_test)))
 
 f_out.close()
+
+print()
+full_system.print_tree()

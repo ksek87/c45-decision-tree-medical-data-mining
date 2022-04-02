@@ -139,6 +139,10 @@ class C45Tree:
             # early stop
             N.best_attribute = str(best_attribute)
             N.split_up_down = None
+            N.node_type = 'leaf'
+            N.data = prev_node.data
+            N.labels = prev_node.labels
+            N.predict_leaf_class()
             self.tree_nodes.append(N)
             prev_node.children.append(N)
             return N
@@ -179,9 +183,10 @@ class C45Tree:
             vals = self.dataset[best_attribute].unique() #D[0][best_attribute].unique()
             for v in list(vals):
                 data_part = self.partition_data(D, best_attribute, v)
-                if not data_part:
+
+                if not data_part: # TOGGLED TO EMPTY CAUSES 2 LEAVES ONLY TO BE MADE ** check this
                     # majority class leaf node computed of D
-                    L = Node(D[0], D[1], 'leaf')
+                    L = Node(D[0], D[1], attribute_list, 'leaf')
                     L.depth = N.depth + 1
                     L.best_attribute = best_attribute
                     L.split_criterion = v
@@ -199,7 +204,7 @@ class C45Tree:
                     N_V.parent = prev_node
                     N_V.parent.children.append(N_V)
                     child = self.grow_tree(N_V, attribute_list, data_part)
-                    self.tree_nodes.append(child)
+                    #self.tree_nodes.append(child)
                     dup_N_flag = 1
                     #prev_node.children.append(child)
                     #N.children.append(child)
@@ -410,15 +415,17 @@ class C45Tree:
         :param node:
         :return: node.leaf_label, or recursion
         """
+
         if node.node_type == 'leaf':
             return node.leaf_label
         else:
             for child in node.children:
-                if child.best_attribute is None or child.best_attribute == '':
-                    continue
+                if (child.best_attribute is None or child.best_attribute == '') and child.node_type == 'leaf':
+                    return self.test_tree(test_sample, child)
 
+                if (child.best_attribute is None or child.best_attribute == '') and child.node_type == 'node':
+                    pass
                 else:
-
                     if child.split_criterion == test_sample[child.best_attribute]:
                         return self.test_tree(test_sample, child)
                     else:
@@ -426,9 +433,13 @@ class C45Tree:
                         # check if att_val > split_criterion
                             if pd.to_numeric(test_sample[child.best_attribute]) > float(child.split_criterion):
                                 return self.test_tree(test_sample, child)
+                            else:
+                                pass
                         elif child.split_up_down == 'DOWN':
                             if pd.to_numeric(test_sample[child.best_attribute]) <= float(child.split_criterion):
                                 return self.test_tree(test_sample, child)
+                            else:
+                                pass
 
 
 
@@ -505,7 +516,7 @@ f_out.write('Number of Nodes for 100 sample tree:' + str(len(system_test.tree_no
 nodes_created = system_test.tree_nodes
 
 leaf_count = 0
-for n in nodes_created:
+for n in set(nodes_created):
     # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1
@@ -589,10 +600,13 @@ for n in nodes_created:
         d.print_node()
     print()
 
+print()
 
+print('FULL SET')
 true_pred = 0
 full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
+print(len(full_system.tree_nodes))
 for k in range(len(x_train)):
     tester_instance = x_train.iloc[k]
     pred = full_system.test_tree(tester_instance, full_system.root_node)

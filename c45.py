@@ -209,9 +209,9 @@ class C45Tree:
                     # prev_node.children.append(N_V)
                     # N.split_criterion = crit_split_val
 
-        if dup_N_flag == 0:
-            if N not in self.tree_nodes:
-                self.tree_nodes.append(N)
+        #if dup_N_flag == 0:
+        if N not in self.tree_nodes:
+            self.tree_nodes.append(N)
             prev_node.children.append(N)
         return N
 

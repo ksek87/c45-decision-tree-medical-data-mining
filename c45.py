@@ -3,6 +3,7 @@
     Title: Implementing C4.5 Decision Tree Algorithm for Medical Data Mining
     Author: Keelin Sekerka-Bajbus B00739421
 
+    Filename: c45.py
     Program Description:
         This program implements Quinlan's C4.5 decision tree from scratch, and conducts experiments using the UCI
         ML repo Thyroid disease dataset for binding proteins (allbp). Specifically, this program uses two classes,
@@ -10,7 +11,7 @@
 
     Data Source:
     - UCI Machine Learning Repository, Thyroid Disease Data Set https://archive.ics.uci.edu/ml/datasets/thyroid+disease
-        (Using allbp.data and allbp.test files, 2800 instances in training)
+        (Using allbp.data and allbp.test files, 2800 instances in training, 972 testing)
 
     References Consulted:
     [1] Data Mining (3rd Edition) Chapter 8 https://doi-org.ezproxy.library.dal.ca/10.1016/B978-0-12-381479-1.00008-3
@@ -101,7 +102,6 @@ class C45Tree:
             if prev_node not in prev_node.parent.children:
                 prev_node.parent.children.append(prev_node)
 
-        dup_N_flag = 0
         # check for termination cases
         # check if all tuples in D are in the same class
         if self.check_same_class_labels(D[1]):
@@ -202,14 +202,7 @@ class C45Tree:
                     N_V.parent = prev_node
                     N_V.parent.children.append(N_V)
                     child = self.grow_tree(N_V, attribute_list, data_part)
-                    # self.tree_nodes.append(child)
-                    dup_N_flag = 1
-                    # prev_node.children.append(child)
-                    # N.children.append(child)
-                    # prev_node.children.append(N_V)
-                    # N.split_criterion = crit_split_val
 
-        #if dup_N_flag == 0:
         if N not in self.tree_nodes:
             self.tree_nodes.append(N)
             prev_node.children.append(N)
@@ -297,7 +290,6 @@ class C45Tree:
         """
         best_attribute = ''
         dataset_entropy = self.data_entropy(D[1])
-        splitting_criterion = ""
         best_info_gain_ratio = 0.0
         split_val = ''
 
@@ -513,9 +505,6 @@ y_test = y_test.replace('decreased  binding  protein.', 'decreased  binding  pro
 print(y_train.value_counts())
 print(y_test.value_counts())
 
-
-
-
 # 100 sample decision tree
 system_test = C45Tree(column_names, train_data)
 
@@ -541,8 +530,6 @@ for n in nodes_created:
 print('leaves', leaf_count)
 print(len(system_test.tree_nodes))
 f_out.write('Number of leaves:' + str(leaf_count) + '\n')
-# tester_instance = x_train.iloc[0]
-# pred = system_test.test_tree(tester_instance, system_test.root_node)
 
 true_pred, preds = system_test.predict(x, y)
 print('train accuracy:', true_pred / len(x))

@@ -6,15 +6,29 @@
         Node and C45Tree to construct the decision tree using the Information gain ratio from information theory.
 
 ## Repository Directory:
+               
+    - /original_data                # directory stores allbp.data and allbp.test from [3]
+    - /printed_trees                # directory stores text files containing the printed trees from experiments                    
+    - README.md 
+    - allbp_data.csv                # Training Data from [3]
+    - allbp_test.csv                # Testing Data from  [3]
+    - c45.py                        # Core program that implements C4.5 algorithm and conducts experiments
+    - data_cleaning.py              # Simple script to clean original data from [3] and convert it to csv file for processing by pandas
+    - full_experiments_allpb.txt    # contains experimental results for fully trained trees
+    - initial_testing_results.txt   # contains experimental results for 100-sample, 500-sample, and fully trained trees    
 
 
 ## How to reproduce experimental results:
+1. Navigate to the project repository
+2. Run the c45.py program with the following command: `python3 c45.py`
+3. View progress in terminal and final results in initial_testing_results.txt and full_experiments_allpb.txt.
 
+Note: data_cleaning.py is only used to convert files to csv, files are already in csv format for c45.py file processing.
 
-
-
-
-
+## Results:
+- Fully trained tree: average training accuracy of 95.32% and testing accuracy of 96.91% over three trials
+- 100-sample tree: 96.00% training accuracy, 95.83% testing accuracy
+- 500-sample tree: 99.00% training accuracy, 97.58% testing accuracy
 
 
 ## Data Source:

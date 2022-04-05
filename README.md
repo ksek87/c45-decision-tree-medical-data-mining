@@ -1,6 +1,4 @@
-# CSCI 4144 Project
-
-## CSCI 4144 Data Mining and Warehousing Project - Implementing C4.5 Decision Tree Algorithm for Medical Data Mining 
+# CSCI 4144 Data Mining and Warehousing Project - Implementing C4.5 Decision Tree Algorithm for Medical Data Mining 
 
 ## Program Description:
         This program implements Quinlan's C4.5 decision tree from scratch, and conducts experiments using the UCI

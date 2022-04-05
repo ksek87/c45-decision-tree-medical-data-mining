@@ -572,7 +572,7 @@ full_system = C45Tree(column_names, train_data)
 full_system.train(x_train, y_train)
 print(len(full_system.tree_nodes))
 leaf_count = 0
-for n in set(sorted(full_system.tree_nodes)):
+for n in sorted(full_system.tree_nodes):
     # print(n.print_node())
     if n.node_type == 'leaf':
         leaf_count += 1

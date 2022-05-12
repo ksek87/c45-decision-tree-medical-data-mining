@@ -30,6 +30,7 @@ Note: data_cleaning.py is only used to convert files to csv, files are already i
 - 100-sample tree: 96.00% training accuracy, 95.83% testing accuracy
 - 500-sample tree: 99.00% training accuracy, 97.58% testing accuracy
 
+Read the full report [here](https://github.com/ksek87/c45-decision-tree-medical-data-mining/blob/main/report.pdf)!
 
 ## Data Source:
     UCI Machine Learning Repository, Thyroid Disease Data Set https://archive.ics.uci.edu/ml/datasets/thyroid+disease

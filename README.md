@@ -15,7 +15,8 @@ Node and C45Tree to construct the decision tree using the Information gain ratio
     - c45.py                        # Core program that implements C4.5 algorithm and conducts experiments
     - data_cleaning.py              # Simple script to clean original data from [3] and convert it to csv file for processing by pandas
     - full_experiments_allpb.txt    # contains experimental results for fully trained trees
-    - initial_testing_results.txt   # contains experimental results for 100-sample, 500-sample, and fully trained trees    
+    - initial_testing_results.txt   # contains experimental results for 100-sample, 500-sample, and fully trained trees
+    - report.pdf                    # final report submitted for project deliverables
 
 
 ## How to reproduce experimental results:
